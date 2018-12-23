@@ -62,6 +62,12 @@ class ScrollScreen extends Component {
     LayoutAnimation.easeInEaseOut();
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps !== this.props) {
+      this.scrollAuto();
+    }
+  }
+
   renderDescription(profileId, profileDescription) {
     // show description logic
     if (profileId === this.props.selectedLibrary) {
@@ -146,6 +152,7 @@ class ScrollScreen extends Component {
 
     return (
       <ScrollView ref={(scroller) => { this.scroller = scroller }}>
+        <Text>{artistId}, {artistName}</Text>
         {this.props.geoPoints.map((profile) => {
           return (
             <View key={profile.id} style={styles.screen}>

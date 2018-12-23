@@ -67,6 +67,12 @@ class HomeScreen extends React.Component {
     this.props.getMuralLocations();
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps !== this.props) {
+      this.props.getMuralLocations();
+    }
+  }
+
   handleChange = text => {
     this.setState({ text, editing: true })
   }
@@ -81,7 +87,6 @@ class HomeScreen extends React.Component {
   }
 
   render() {
-    console.log('Home');
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
         <View style={styles.container}>

@@ -66,9 +66,14 @@ const checkDistance = (e, state, n) => {
   let x = haversine(start, end, { unit: 'meter' })
 
   if (x <= n) {
-    return true;
+    return {
+      inRange: true,
+      distance: x
+    };
   } else {
-    return false;
+    return {
+      inRange: false
+    }
   }
 }
 
@@ -141,10 +146,30 @@ class App extends React.Component {
     this.startLooking();
     THREE.suppressExpoWarnings(true);
     ThreeAR.suppressWarnings();
+    console.log('1', this.state.location)
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps !== this.props) {
+      let location = Location.getCurrentPositionAsync({})
+      this.setState({
+        locations: this.props.geoPoints,
+        // location: createLocations(this.props.geoPoints, {
+        //   latitude: location.coords.latitude,
+        //   longitude: location.coords.longitude
+        // }),
+        location: this._getLocationAsync()
+      })
+      this.startLooking();
+      THREE.suppressExpoWarnings(true);
+      ThreeAR.suppressWarnings();
+    }
+    console.log('2', this.state.location)
   }
 
   startLooking = async () => {
-    await Location.watchPositionAsync({}, (data) => {
+    await Location.watchPositionAsync({ distanceInterval: 10 }, (data) => {
+      console.log('watching');
       this.setState({
         locations: createLocations(this.props.geoPoints, {
           latitude: data.coords.latitude,
@@ -153,6 +178,7 @@ class App extends React.Component {
         location: this._getLocationAsync()
       })
     })
+    console.log('3', this.state.location)
   }
 
 
@@ -167,6 +193,7 @@ class App extends React.Component {
     } else {
       this._getLocationAsync();
     }
+    console.log('4', this.state.location)
   }
 
   _getLocationAsync = async () => {
@@ -185,6 +212,7 @@ class App extends React.Component {
         longitude: location.coords.longitude
       })
     })
+    console.log('5', this.state.location)
   }
 
   render() {
@@ -200,7 +228,6 @@ class App extends React.Component {
       )
     }
     else {
-      console.log('AR');
       return (
         <GraphicsView
           style={{ flex: 1 }}
@@ -244,40 +271,70 @@ class App extends React.Component {
     
     setTimeout(() => {
       this.state.locations.map(e => {
-        // if (checkDistance(e, this.state.location, 100)) {
-        const geometry = new THREE.ConeGeometry(1, 4, 5);
-        const material = new THREE.MeshPhongMaterial({
-          color: 'red',
-        });
-        this.i = new THREE.Mesh(geometry, material);
-        this.i.position.x = e.x;
-        this.i.position.z = e.z;
-        this.i.rotation.z = 3;
-        this.i.position.y = 10;
+        let closeBy = checkDistance(e, this.state.location, 20);
+        let inRange = checkDistance(e, this.state.location, 100);
+        // if (closeBy.inRange) {
+        //   const geometry = new THREE.ConeGeometry(1, 4, 5);
+        //   const material = new THREE.MeshPhongMaterial({
+        //     color: 'blue',
+        //   });
+        //   this.i = new THREE.Mesh(geometry, material);
+        //   this.i.position.x = e.x;
+        //   this.i.position.z = e.z;
+        //   this.i.rotation.z = 3;
+        //   this.i.position.y = 10;
+        //   this.scene.add(this.i);
+        //   return;
+        // } else 
+        if (inRange.inRange) {
+          const geometry = new THREE.ConeGeometry(1, 4, 5);
+          const material = new THREE.MeshPhongMaterial({
+            color: 'red',
+          });
+          this.i = new THREE.Mesh(geometry, material);
+          this.i.position.x = e.x;
+          this.i.position.z = e.z;
+          this.i.rotation.z = 3;
+          this.i.position.y = 10;
           this.scene.add(this.i);
-        // }
+          return;
+        }
       })
     }, 1000);
 
     
-    // setInterval(() => {
-    //   this.state.locations.map(e => {
-    //     if (checkDistance(e, this.state.location, 100)) {
-    //     console.log('this.i', this.i);
-    //     const geometry = new THREE.ConeGeometry(1, 4, 5);
-    //     const material = new THREE.MeshPhongMaterial({
-    //       color: 'red',
-    //     });
-    //     this.i = new THREE.Mesh(geometry, material);
-    //     this.i.position.x = e.x;
-    //     this.i.position.z = e.z;
-    //     this.i.rotation.z = 3;
-    //     this.i.position.y = 10;
-    //       this.scene.add(this.i);
-    //     } else {
-    //     }
-    //   })
-    // }, 5000);
+    setInterval(() => {
+      this.state.locations.map(e => {
+        let closeBy = checkDistance(e, this.state.location, 20);
+        let inRange = checkDistance(e, this.state.location, 100);
+        // if (closeBy.inRange) {
+        //   const geometry = new THREE.ConeGeometry(1, 4, 5);
+        //   const material = new THREE.MeshPhongMaterial({
+        //     color: 'blue',
+        //   });
+        //   this.i = new THREE.Mesh(geometry, material);
+        //   this.i.position.x = e.x;
+        //   this.i.position.z = e.z;
+        //   this.i.rotation.z = 3;
+        //   this.i.position.y = 10;
+        //   this.scene.add(this.i);
+        //   return;
+        // } else 
+        if (inRange.inRange) {
+          const geometry = new THREE.ConeGeometry(1, 4, 5);
+          const material = new THREE.MeshPhongMaterial({
+            color: 'red',
+          });
+          this.i = new THREE.Mesh(geometry, material);
+          this.i.position.x = e.x;
+          this.i.position.z = e.z;
+          this.i.rotation.z = 3;
+          this.i.position.y = 10;
+          this.scene.add(this.i);
+          return;
+        }
+      })
+    }, 10000);
 
   };
 
