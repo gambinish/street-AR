@@ -53,9 +53,10 @@ const transformPointToAR = (lat, long, deviceLatitude, deviceLongitude) => {
 }
 
 const checkDistance = (e, state, n) => {
+  // console.log('why u no werk', state)
   let start = {
-    latitude: state.coords.latitude,
-    longitude: state.coords.longitude
+    latitude: state._55.coords.latitude,
+    longitude: state._55.coords.longitude
   }
 
   let end = {
@@ -137,8 +138,7 @@ class App extends React.Component {
   async componentDidMount() {
     let location = await Location.getCurrentPositionAsync({})
     this.setState({
-      locations: this.props.geoPoints,
-      location: createLocations(this.props.geoPoints, {
+      locations: createLocations(this.props.geoPoints, {
         latitude: location.coords.latitude,
         longitude: location.coords.longitude
       }),
@@ -146,14 +146,17 @@ class App extends React.Component {
     this.startLooking();
     THREE.suppressExpoWarnings(true);
     ThreeAR.suppressWarnings();
-    console.log('1', this.state.location)
+    // console.log('1', this.state.location)
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps !== this.props) {
       let location = Location.getCurrentPositionAsync({})
       this.setState({
-        locations: this.props.geoPoints,
+        locations: createLocations(this.props.geoPoints, {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude
+        }),
         // location: createLocations(this.props.geoPoints, {
         //   latitude: location.coords.latitude,
         //   longitude: location.coords.longitude
@@ -164,21 +167,22 @@ class App extends React.Component {
       THREE.suppressExpoWarnings(true);
       ThreeAR.suppressWarnings();
     }
-    console.log('2', this.state.location)
+    // console.log('2', this.state.location)
   }
 
   startLooking = async () => {
     await Location.watchPositionAsync({ distanceInterval: 10 }, (data) => {
       console.log('watching');
+      let location = Location.getCurrentPositionAsync({});
+      this.setState({ location });
       this.setState({
         locations: createLocations(this.props.geoPoints, {
           latitude: data.coords.latitude,
           longitude: data.coords.longitude
         }),
-        location: this._getLocationAsync()
       })
     })
-    console.log('3', this.state.location)
+    // console.log('3', this.state.location)
   }
 
 
@@ -193,7 +197,6 @@ class App extends React.Component {
     } else {
       this._getLocationAsync();
     }
-    console.log('4', this.state.location)
   }
 
   _getLocationAsync = async () => {
@@ -206,13 +209,12 @@ class App extends React.Component {
     let location = await Location.getCurrentPositionAsync({});
     this.setState({ location });
     this.setState({
-      photos: this.props.geoPoints,
       locations: createLocations(this.props.geoPoints, {
         latitude: location.coords.latitude,
         longitude: location.coords.longitude
       })
     })
-    console.log('5', this.state.location)
+    // console.log('5', this.state.location)
   }
 
   render() {
@@ -271,6 +273,7 @@ class App extends React.Component {
     
     setTimeout(() => {
       this.state.locations.map(e => {
+        console.log('location', this.state.location)
         let closeBy = checkDistance(e, this.state.location, 20);
         let inRange = checkDistance(e, this.state.location, 100);
         if (closeBy.inRange) {
@@ -284,7 +287,6 @@ class App extends React.Component {
           this.i.rotation.z = 3;
           this.i.position.y = 10;
           this.scene.add(this.i);
-          return;
         } else if (inRange.inRange && !closeBy.inRange) {
           const geometry = new THREE.ConeGeometry(1, 4, 5);
           const material = new THREE.MeshPhongMaterial({
@@ -296,14 +298,22 @@ class App extends React.Component {
           this.i.rotation.z = 3;
           this.i.position.y = 10;
           this.scene.add(this.i);
-          return;
         }
       })
     }, 1000);
 
     
     setInterval(() => {
-      console.log(this.state.location, 'where am i');
+      // while(this.scene.geometries.length > 0){ 
+      //   this.scene.remove(this.scene.geometries[0]); 
+      //   this.scene.remove(this.scene.materials[0]); 
+      // }
+      for( var i = this.scene.children.length - 1; i >= 0; i--) {
+        obj = this.scene.children[i];
+        this.scene.remove(obj);
+       }
+      console.log('this.scene', this.scene);
+      // console.log('location', this.state.location)
       this.state.locations.map(e => {
         let closeBy = checkDistance(e, this.state.location, 20);
         let inRange = checkDistance(e, this.state.location, 100);
