@@ -273,20 +273,19 @@ class App extends React.Component {
       this.state.locations.map(e => {
         let closeBy = checkDistance(e, this.state.location, 20);
         let inRange = checkDistance(e, this.state.location, 100);
-        // if (closeBy.inRange) {
-        //   const geometry = new THREE.ConeGeometry(1, 4, 5);
-        //   const material = new THREE.MeshPhongMaterial({
-        //     color: 'blue',
-        //   });
-        //   this.i = new THREE.Mesh(geometry, material);
-        //   this.i.position.x = e.x;
-        //   this.i.position.z = e.z;
-        //   this.i.rotation.z = 3;
-        //   this.i.position.y = 10;
-        //   this.scene.add(this.i);
-        //   return;
-        // } else 
-        if (inRange.inRange) {
+        if (closeBy.inRange) {
+          const geometry = new THREE.ConeGeometry(1, 4, 5);
+          const material = new THREE.MeshPhongMaterial({
+            color: 'blue',
+          });
+          this.i = new THREE.Mesh(geometry, material);
+          this.i.position.x = e.x;
+          this.i.position.z = e.z;
+          this.i.rotation.z = 3;
+          this.i.position.y = 10;
+          this.scene.add(this.i);
+          return;
+        } else if (inRange.inRange && !closeBy.inRange) {
           const geometry = new THREE.ConeGeometry(1, 4, 5);
           const material = new THREE.MeshPhongMaterial({
             color: 'red',
@@ -304,6 +303,7 @@ class App extends React.Component {
 
     
     setInterval(() => {
+      console.log(this.state.location, 'where am i');
       this.state.locations.map(e => {
         let closeBy = checkDistance(e, this.state.location, 20);
         let inRange = checkDistance(e, this.state.location, 100);
