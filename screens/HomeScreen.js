@@ -87,7 +87,6 @@ class HomeScreen extends React.Component {
   }
 
   render() {
-    console.log('Home');
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
         <View style={styles.container}>
