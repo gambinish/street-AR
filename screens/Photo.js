@@ -17,6 +17,12 @@ export default class Photo extends React.Component {
     this._mounted = true;
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps !== this.props) {
+      this._mounted = true;
+    }
+  }
+
   componentWillUnmount() {
     this._mounted = false;
   }

@@ -58,6 +58,28 @@ export default class MapScreen extends React.Component {
     // console.log('IMPORTED: ', GeoPoints)
     this.fetchLocationData(GeoPoints)
   }
+
+  componentDidUpdate = async () => {
+
+    // LINK TO URL
+    Linking.addEventListener('url', this._handleOpenURL);
+
+    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    if (status !== 'granted') {
+      this.setState({
+        errorMessage: 'Permission to access location was denied',
+      });
+    }
+    let location = await Location.getCurrentPositionAsync({});
+    console.log('MAP CURRENT: ', location)
+    this.setState({
+      location: location
+    });
+    // console.log('IMPORTED: ', GeoPoints)
+    this.fetchLocationData(GeoPoints)
+  }
+
+
   componentWillUnmount() {
     Linking.removeEventListener('url', this._handleOpenURL);
   }

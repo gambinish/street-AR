@@ -143,6 +143,22 @@ class App extends React.Component {
     ThreeAR.suppressWarnings();
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps !== this.props) {
+      let location = Location.getCurrentPositionAsync({})
+      this.setState({
+        locations: this.props.geoPoints,
+        location: createLocations(this.props.geoPoints, {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude
+        }),
+      })
+      this.startLooking();
+      THREE.suppressExpoWarnings(true);
+      ThreeAR.suppressWarnings();
+    }
+  }
+
   startLooking = async () => {
     await Location.watchPositionAsync({}, (data) => {
       this.setState({

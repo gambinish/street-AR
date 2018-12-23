@@ -97,6 +97,14 @@ export default class CameraScreen extends React.Component {
     });
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps !== this.props) {
+      FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'photos').catch(e => {
+        console.log(e, 'Directory exists');
+      });
+    }
+  }
+
   getRatios = async () => {
     const ratios = await this.camera.getSupportedRatios();
     return ratios;

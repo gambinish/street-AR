@@ -67,6 +67,12 @@ class HomeScreen extends React.Component {
     this.props.getMuralLocations();
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps !== this.props) {
+      this.props.getMuralLocations();
+    }
+  }
+
   handleChange = text => {
     this.setState({ text, editing: true })
   }

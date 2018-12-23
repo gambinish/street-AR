@@ -26,6 +26,9 @@ export default NavigatingStack = createBottomTabNavigator({
           }
         />
       ),
+      tabBarOnPress: ({ navigation, defaultHandler }) => {
+        defaultHandler();
+      }
     }
   },
   Map: {
@@ -41,7 +44,10 @@ export default NavigatingStack = createBottomTabNavigator({
             : 'md-information-circle'
           }
         />
-      )
+      ),
+      tabBarOnPress: ({ navigation, defaultHandler }) => {
+        defaultHandler();
+      }
     }
   },
   Scroll: {
@@ -57,7 +63,10 @@ export default NavigatingStack = createBottomTabNavigator({
             : 'md-information-circle'
           }
         />
-      )
+      ),
+      tabBarOnPress: ({ navigation, defaultHandler }) => {
+        defaultHandler();
+      }
     }
   },
   Scene: {
@@ -73,7 +82,10 @@ export default NavigatingStack = createBottomTabNavigator({
             : 'md-information-circle'
           }
         />
-      )
+      ),
+      tabBarOnPress: ({ navigation, defaultHandler }) => {
+        defaultHandler();
+      }
     }
   },
   Clarifai: {
@@ -89,97 +101,17 @@ export default NavigatingStack = createBottomTabNavigator({
             : 'md-information-circle'
           }
         />
-      )
+      ),
+      tabBarOnPress: ({ navigation, defaultHandler }) => {
+        defaultHandler();
+      }
     }
   }
+},
+{
+  navigationOptions: {
+    tabBarOnPress: ({ navigation, defaultHandler }) => {
+      defaultHandler();
+    }
+  },
 });
-
-// const HomeStack = createStackNavigator({
-//   Home: HomeScreen,
-// });
-
-// HomeStack.navigationOptions = {
-//   tabBarLabel: 'Home',
-//   tabBarIcon: ({ focused }) => (
-//     <TabBarIcon
-//       focused={focused}
-//       name={
-//         Platform.OS === 'ios'
-//           ? `ios-information-circle${focused ? '' : '-outline'}`
-//           : 'md-information-circle'
-//       }
-//     />
-//   ),
-// };
-
-// const MapStack = createStackNavigator({
-//   Map: MapScreen,
-// });
-
-// MapStack.navigationOptions = {
-//   tabBarLabel: 'Map',
-//   tabBarIcon: ({ focused }) => (
-//     <TabBarIcon
-//       focused={focused}
-//       name={Platform.OS === 'ios'
-//         ? 'ios-options'
-//         : 'md-options'}
-//     />
-//   ),
-// };
-
-// const ScrollStack = createStackNavigator({
-//   Scroll: ScrollScreen,
-// });
-
-// ScrollStack.navigationOptions = {
-//   tabBarLabel: 'Scroll',
-//   tabBarIcon: ({ focused }) => (
-//     <TabBarIcon
-//       focused={focused}
-//       name={Platform.OS === 'ios'
-//         ? 'ios-options'
-//         : 'md-options'}
-//     />
-//   ),
-// };
-
-// const ClarifaiStack = createStackNavigator({
-//   Clarifai: ClarifaiScreen,
-// });
-
-// ClarifaiStack.navigationOptions = {
-//   tabBarLabel: 'AI',
-//   tabBarIcon: ({ focused }) => (
-//     <TabBarIcon
-//       focused={focused}
-//       name={Platform.OS === 'ios'
-//         ? 'ios-options'
-//         : 'md-options'}
-//     />
-//   ),
-// };
-
-// const SceneStack = createStackNavigator({
-//   Scene: Scene,
-// });
-
-// SceneStack.navigationOptions = {
-//   tabBarLabel: 'Scene',
-//   tabBarIcon: ({ focused }) => (
-//     <TabBarIcon
-//       focused={focused}
-//       name={Platform.OS === 'ios'
-//         ? 'ios-options'
-//         : 'md-options'}
-//     />
-//   ),
-// };
-
-// export default createBottomTabNavigator({
-//   HomeStack,
-//   MapStack,
-//   ScrollStack,
-//   SceneStack,
-//   ClarifaiStack
-// });
