@@ -269,78 +269,78 @@ class App extends React.Component {
     this.camera = new ThreeAR.Camera(width, height, 0.0001, 1000);
 
     this.scene.add(new THREE.AmbientLight(0xffffff));
-
     
+    let variables = [];
     setTimeout(() => {
       this.state.locations.map(e => {
-        console.log('location', this.state.location)
         let closeBy = checkDistance(e, this.state.location, 20);
         let inRange = checkDistance(e, this.state.location, 100);
         if (closeBy.inRange) {
-          const geometry = new THREE.ConeGeometry(1, 4, 5);
+          const geometry = new THREE.ConeGeometry((1/20)*closeBy.distance, (4/20)*closeBy.distance, (5/20)*closeBy.distance);
           const material = new THREE.MeshPhongMaterial({
             color: 'blue',
           });
-          this.i = new THREE.Mesh(geometry, material);
-          this.i.position.x = e.x;
-          this.i.position.z = e.z;
-          this.i.rotation.z = 3;
-          this.i.position.y = 10;
-          this.scene.add(this.i);
+          let varname = 'pointer' + e.id;
+          window[varname] = new THREE.Mesh(geometry, material);
+          window[varname].position.x = e.x;
+          window[varname].position.z = e.z;
+          window[varname].rotation.z = 3;
+          window[varname].position.y = 10;
+          this.scene.add(window[varname]);
+          variables.push(varname);
         } else if (inRange.inRange && !closeBy.inRange) {
-          const geometry = new THREE.ConeGeometry(1, 4, 5);
+          const geometry = new THREE.ConeGeometry((1/20)*inRange.distance, (4/20)*inRange.distance, (5/20)*inRange.distance);
           const material = new THREE.MeshPhongMaterial({
             color: 'red',
           });
-          this.i = new THREE.Mesh(geometry, material);
-          this.i.position.x = e.x;
-          this.i.position.z = e.z;
-          this.i.rotation.z = 3;
-          this.i.position.y = 10;
-          this.scene.add(this.i);
+          let varname = 'pointer' + e.id;
+          window[varname] = new THREE.Mesh(geometry, material);
+          window[varname].position.x = e.x;
+          window[varname].position.z = e.z;
+          window[varname].rotation.z = 3;
+          window[varname].position.y = 10;
+          this.scene.add(window[varname]);
+          variables.push(varname);
         }
       })
     }, 1000);
-
     
     setInterval(() => {
-      // while(this.scene.geometries.length > 0){ 
-      //   this.scene.remove(this.scene.geometries[0]); 
-      //   this.scene.remove(this.scene.materials[0]); 
-      // }
-      for( var i = this.scene.children.length - 1; i >= 0; i--) {
-        obj = this.scene.children[i];
-        this.scene.remove(obj);
-       }
-      console.log('this.scene', this.scene);
-      // console.log('location', this.state.location)
+      variables.map(e => {
+        this.scene.remove(window[e]);
+      })
+      variables = [];
       this.state.locations.map(e => {
+        console.log('my location', this.state.location._55.coords.latitude, this.state.location._55.coords.longitude);
+        console.log('a;sldkfja;', e.tourspot, e.x, e.z);
         let closeBy = checkDistance(e, this.state.location, 20);
         let inRange = checkDistance(e, this.state.location, 100);
         if (closeBy.inRange) {
-          const geometry = new THREE.ConeGeometry(1, 4, 5);
+          const geometry = new THREE.ConeGeometry((1/20)*closeBy.distance, (4/20)*closeBy.distance, (5/20)*closeBy.distance);
           const material = new THREE.MeshPhongMaterial({
             color: 'blue',
           });
-          this.i = new THREE.Mesh(geometry, material);
-          this.i.position.x = e.x;
-          this.i.position.z = e.z;
-          this.i.rotation.z = 3;
-          this.i.position.y = 10;
-          this.scene.add(this.i);
-          return;
+          let varname = 'pointer' + e.id;
+          window[varname] = new THREE.Mesh(geometry, material);
+          window[varname].position.x = e.x;
+          window[varname].position.z = e.z;
+          window[varname].rotation.z = 3;
+          window[varname].position.y = 10;
+          this.scene.add(window[varname]);
+          variables.push(varname);
         } else if (inRange.inRange && !closeBy.inRange) {
-          const geometry = new THREE.ConeGeometry(1, 4, 5);
+          const geometry = new THREE.ConeGeometry((1/20)*inRange.distance, (4/20)*inRange.distance, (5/20)*inRange.distance);
           const material = new THREE.MeshPhongMaterial({
             color: 'red',
           });
-          this.i = new THREE.Mesh(geometry, material);
-          this.i.position.x = e.x;
-          this.i.position.z = e.z;
-          this.i.rotation.z = 3;
-          this.i.position.y = 10;
-          this.scene.add(this.i);
-          return;
+          let varname = 'pointer' + e.id;
+          window[varname] = new THREE.Mesh(geometry, material);
+          window[varname].position.x = e.x;
+          window[varname].position.z = e.z;
+          window[varname].rotation.z = 3;
+          window[varname].position.y = 10;
+          this.scene.add(window[varname]);
+          variables.push(varname);
         }
       })
     }, 10000);
