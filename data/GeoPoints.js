@@ -257,6 +257,36 @@ const GeoPoints = [
     url: 'test.com',
     artist: 'aroha-tours.com'
   },
+  {
+    id: 22,
+    name: 'Home',
+    latitude: 21.386906,
+    longitude: -157.924244,
+    image: '../assets/images/TheBoxJelly.jpg',
+    wall: 'https://s3-media3.fl.yelpcdn.com/bphoto/08eKCz5NlJKs_YMnh4cK5Q/o.jpg',
+    url: 'test.com',
+    artist: 'aroha-tours.com'
+  },
+  {
+    id: 23,
+    name: 'Home 2',
+    latitude: 21.386932,
+    longitude: -157.924213,
+    image: '../assets/images/TheBoxJelly.jpg',
+    wall: 'https://s3-media3.fl.yelpcdn.com/bphoto/08eKCz5NlJKs_YMnh4cK5Q/o.jpg',
+    url: 'test.com',
+    artist: 'aroha-tours.com'
+  },
+  {
+    id: 24,
+    name: 'Home 3',
+    latitude: 21.386554,
+    longitude: -157.923950,
+    image: '../assets/images/TheBoxJelly.jpg',
+    wall: 'https://s3-media3.fl.yelpcdn.com/bphoto/08eKCz5NlJKs_YMnh4cK5Q/o.jpg',
+    url: 'test.com',
+    artist: 'aroha-tours.com'
+  },
 ]
 
 

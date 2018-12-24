@@ -1,15 +1,14 @@
 import React from 'react';
 import { AR, Camera, Permissions, Location, Constants } from 'expo';
 import ExpoTHREE, { AR as ThreeAR, THREE } from 'expo-three';
+import { THREE as VIDEO } from 'three';
 import { View as GraphicsView } from 'expo-graphics';
-// import { Platform } from 'react-native';
 import { connect } from 'react-redux';
 import { getMuralLocations } from '../redux/app-redux.js';
 import { Platform, View, Text, Button, StyleSheet } from 'react-native';
-// import tourspots from '../data/GeoPoints';
 console.disableYellowBox = true;
 const haversine = require('haversine');
-
+let mural;
 
 const mapStateToProps = (state) => {
   return {
@@ -146,7 +145,6 @@ class App extends React.Component {
     this.startLooking();
     THREE.suppressExpoWarnings(true);
     ThreeAR.suppressWarnings();
-    // console.log('1', this.state.location)
   }
 
   componentDidUpdate(prevProps) {
@@ -157,22 +155,16 @@ class App extends React.Component {
           latitude: location.coords.latitude,
           longitude: location.coords.longitude
         }),
-        // location: createLocations(this.props.geoPoints, {
-        //   latitude: location.coords.latitude,
-        //   longitude: location.coords.longitude
-        // }),
         location: this._getLocationAsync()
       })
       this.startLooking();
       THREE.suppressExpoWarnings(true);
       ThreeAR.suppressWarnings();
     }
-    // console.log('2', this.state.location)
   }
 
   startLooking = async () => {
     await Location.watchPositionAsync({ distanceInterval: 10 }, (data) => {
-      console.log('watching');
       let location = Location.getCurrentPositionAsync({});
       this.setState({ location });
       this.setState({
@@ -182,7 +174,6 @@ class App extends React.Component {
         }),
       })
     })
-    // console.log('3', this.state.location)
   }
 
 
@@ -214,7 +205,6 @@ class App extends React.Component {
         longitude: location.coords.longitude
       })
     })
-    // console.log('5', this.state.location)
   }
 
   render() {
@@ -253,7 +243,6 @@ class App extends React.Component {
       GravityAndHeading: 'gravityAndHeading',
       AlignmentCamera: 'alignmentCamera',
     };
-
     AR.setWorldAlignment(WorldAlignmentTypes.GravityAndHeading)
 
     // Create a 3D renderer
@@ -269,81 +258,111 @@ class App extends React.Component {
     this.camera = new ThreeAR.Camera(width, height, 0.0001, 1000);
 
     this.scene.add(new THREE.AmbientLight(0xffffff));
-    
-    let variables = [];
-    setTimeout(() => {
-      this.state.locations.map(e => {
-        let closeBy = checkDistance(e, this.state.location, 20);
-        let inRange = checkDistance(e, this.state.location, 100);
-        if (closeBy.inRange) {
-          const geometry = new THREE.ConeGeometry((1/20)*closeBy.distance, (4/20)*closeBy.distance, (5/20)*closeBy.distance);
-          const material = new THREE.MeshPhongMaterial({
-            color: 'blue',
-          });
-          let varname = 'pointer' + e.id;
-          window[varname] = new THREE.Mesh(geometry, material);
-          window[varname].position.x = e.x;
-          window[varname].position.z = e.z;
-          window[varname].rotation.z = 3;
-          window[varname].position.y = 10;
-          this.scene.add(window[varname]);
-          variables.push(varname);
-        } else if (inRange.inRange && !closeBy.inRange) {
-          const geometry = new THREE.ConeGeometry((1/20)*inRange.distance, (4/20)*inRange.distance, (5/20)*inRange.distance);
-          const material = new THREE.MeshPhongMaterial({
-            color: 'red',
-          });
-          let varname = 'pointer' + e.id;
-          window[varname] = new THREE.Mesh(geometry, material);
-          window[varname].position.x = e.x;
-          window[varname].position.z = e.z;
-          window[varname].rotation.z = 3;
-          window[varname].position.y = 10;
-          this.scene.add(window[varname]);
-          variables.push(varname);
-        }
-      })
-    }, 1000);
-    
-    setInterval(() => {
-      variables.map(e => {
-        this.scene.remove(window[e]);
-      })
-      variables = [];
-      this.state.locations.map(e => {
-        console.log('my location', this.state.location._55.coords.latitude, this.state.location._55.coords.longitude);
-        console.log('a;sldkfja;', e.tourspot, e.x, e.z);
-        let closeBy = checkDistance(e, this.state.location, 20);
-        let inRange = checkDistance(e, this.state.location, 100);
-        if (closeBy.inRange) {
-          const geometry = new THREE.ConeGeometry((1/20)*closeBy.distance, (4/20)*closeBy.distance, (5/20)*closeBy.distance);
-          const material = new THREE.MeshPhongMaterial({
-            color: 'blue',
-          });
-          let varname = 'pointer' + e.id;
-          window[varname] = new THREE.Mesh(geometry, material);
-          window[varname].position.x = e.x;
-          window[varname].position.z = e.z;
-          window[varname].rotation.z = 3;
-          window[varname].position.y = 10;
-          this.scene.add(window[varname]);
-          variables.push(varname);
-        } else if (inRange.inRange && !closeBy.inRange) {
-          const geometry = new THREE.ConeGeometry((1/20)*inRange.distance, (4/20)*inRange.distance, (5/20)*inRange.distance);
-          const material = new THREE.MeshPhongMaterial({
-            color: 'red',
-          });
-          let varname = 'pointer' + e.id;
-          window[varname] = new THREE.Mesh(geometry, material);
-          window[varname].position.x = e.x;
-          window[varname].position.z = e.z;
-          window[varname].rotation.z = 3;
-          window[varname].position.y = 10;
-          this.scene.add(window[varname]);
-          variables.push(varname);
-        }
-      })
-    }, 10000);
+
+//TESING VIDEO
+    // this.video = document.createElement('video');
+    // this.video.src = 'https://www.youtube.com/watch?v=5dbG4wqN0rQ';
+    // this.video.load();
+    // this.video.play();
+
+    // this.videoCanvas = document.createElement('canvas');
+    // this.videoCanvasctx = this.videoCanvas.getContext('2d');
+    // this.videoCanvas.width = 8;
+    // this.videoCanvas.height = 6;
+
+    // this.videoCanvasctx.fillStyle = '#000000';
+    // this.videoCanvasctx.fillRect(0,0,8,6);
+
+    // this.boxTexture = new VIDEO.Texture(this.videoCanvas);
+    // let boxMaterial = new VIDEO.MeshBasicMaterial({map: this.boxTexture, overdraw: 0.5})
+    // this.box = new VIDEO.BoxGeometry(1,1,1);
+    // this.boxMesh = new VIDEO.Mesh(this.box, boxMaterial);
+
+    // function render() {
+    //   if (this.video.readyState === this.video.HAVE_ENOUGH_DATA) {
+    //     this.videoCanvasctx.drawImage(this.video, 0, 0);
+      // }
+    // }
+//END TEST VIDEO
+    if (mural === 'NO-MURAL') {
+      let variables = [];
+      setTimeout(() => {
+        this.state.locations.map(e => {
+          let closeBy = checkDistance(e, this.state.location, 20);
+          let inRange = checkDistance(e, this.state.location, 100);
+          if (closeBy.inRange) {
+            const geometry = new THREE.ConeGeometry((1/20)*closeBy.distance, (4/20)*closeBy.distance, (5/20)*closeBy.distance);
+            const material = new THREE.MeshPhongMaterial({
+              color: 'blue',
+            });
+            let varname = 'pointer' + e.id;
+            window[varname] = new THREE.Mesh(geometry, material);
+            window[varname].position.x = e.x;
+            window[varname].position.z = e.z;
+            window[varname].rotation.z = 3;
+            window[varname].position.y = 10;
+            this.scene.add(window[varname]);
+            variables.push(varname);
+          } else if (inRange.inRange && !closeBy.inRange) {
+            const geometry = new THREE.ConeGeometry((1/20)*inRange.distance, (4/20)*inRange.distance, (5/20)*inRange.distance);
+            const material = new THREE.MeshPhongMaterial({
+              color: 'red',
+            });
+            let varname = 'pointer' + e.id;
+            window[varname] = new THREE.Mesh(geometry, material);
+            window[varname].position.x = e.x;
+            window[varname].position.z = e.z;
+            window[varname].rotation.z = 3;
+            window[varname].position.y = 10;
+            this.scene.add(window[varname]);
+            variables.push(varname);
+          }
+        })
+        console.log('multiple?', this.scene);
+      }, 1000);
+      
+      setInterval(() => {
+        variables.map(e => {
+          this.scene.remove(window[e]);
+        })
+        variables = [];
+        this.state.locations.map(e => {
+          // console.log('my location', this.state.location._55.coords.latitude, this.state.location._55.coords.longitude);
+          // console.log('a;sldkfja;', e.tourspot, e.x, e.z);
+          let closeBy = checkDistance(e, this.state.location, 30);
+          let inRange = checkDistance(e, this.state.location, 100);
+          if (closeBy.inRange) {
+            const geometry = new THREE.ConeGeometry((1/20)*closeBy.distance, (4/20)*closeBy.distance, (5/20)*closeBy.distance);
+            const material = new THREE.MeshPhongMaterial({
+              color: 'blue',
+            });
+            let varname = 'pointer' + e.id;
+            window[varname] = new THREE.Mesh(geometry, material);
+            window[varname].position.x = e.x;
+            window[varname].position.z = e.z;
+            window[varname].rotation.z = 3;
+            window[varname].position.y = 10;
+            this.scene.add(window[varname]);
+            variables.push(varname);
+          } else if (inRange.inRange && !closeBy.inRange) {
+            const geometry = new THREE.ConeGeometry((1/20)*inRange.distance, (4/20)*inRange.distance, (5/20)*inRange.distance);
+            const material = new THREE.MeshPhongMaterial({
+              color: 'red',
+            });
+            let varname = 'pointer' + e.id;
+            window[varname] = new THREE.Mesh(geometry, material);
+            window[varname].position.x = e.x;
+            window[varname].position.z = e.z;
+            window[varname].rotation.z = 3;
+            window[varname].position.y = 10;
+            this.scene.add(window[varname]);
+            variables.push(varname);
+          }
+        })
+      }, 10000);
+    } else {
+      console.log('CHOSEN ONE', mural);
+    }
 
   };
 
@@ -362,8 +381,7 @@ class App extends React.Component {
   // Called every frame.
   onRender = () => {
     this.renderer.render(this.scene, this.camera);
-  };
-
+  }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
@@ -373,7 +391,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(App);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: '#fff',
+    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
     paddingTop: Constants.statusBarHeight,

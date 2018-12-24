@@ -69,7 +69,6 @@ class ScrollScreen extends Component {
   }
 
   renderDescription(profileId, profileDescription) {
-    // show description logic
     if (profileId === this.props.selectedLibrary) {
       return (
         <CardSection>
@@ -145,14 +144,13 @@ class ScrollScreen extends Component {
   }
 
   render() {
-    console.log('Scroll')
-    const { navigation } = this.props;
-    const artistId = navigation.getParam('artistId', 'NO-ID');
-    const artistName = navigation.getParam('artistName', 'NO-NAME');
+    // const { navigation } = this.props;
+    // const artistId = navigation.getParam('artistId', 'NO-ID');
+    // const artistName = navigation.getParam('artistName', 'NO-NAME');
 
     return (
       <ScrollView ref={(scroller) => { this.scroller = scroller }}>
-        <Text>{artistId}, {artistName}</Text>
+        {/* <Text>{artistId}, {artistName}</Text> */}
         {this.props.geoPoints.map((profile) => {
           return (
             <View key={profile.id} style={styles.screen}>
