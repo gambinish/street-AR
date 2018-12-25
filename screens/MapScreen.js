@@ -62,9 +62,6 @@ class MapScreen extends React.Component {
   }
 
   componentDidMount = async () => {
-    // LINK TO URL
-    Linking.addEventListener('url', this._handleOpenURL);
-    
     // PERMISSIONS
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
     if (status !== 'granted') {
@@ -80,35 +77,8 @@ class MapScreen extends React.Component {
     });
     this.fetchLocationData(GeoPoints)
     
-    this.props.getMuralLocations();
+    // this.props.getMuralLocations();
   }
-
-  componentDidUpdate = async (prevProps) => {
-    if (prevProps !== this.props) {
-      this.props.getMuralLocations();
-    }
-
-    // LINK TO URL
-    Linking.addEventListener('url', this._handleOpenURL);
-
-    // PERMISSIONS
-    let { status } = await Permissions.askAsync(Permissions.LOCATION);
-    if (status !== 'granted') {
-      this.setState({
-        errorMessage: 'Permission to access location was denied',
-      });
-    }
-
-    let location = await Location.getCurrentPositionAsync({});
-    
-    console.log('MAP CURRENT: ', location)
-    this.setState({
-      location: location
-    });
-    
-    this.fetchLocationData(GeoPoints)
-  }
-
 
   componentWillUnmount() {
     Linking.removeEventListener('url', this._handleOpenURL);
@@ -166,31 +136,39 @@ class MapScreen extends React.Component {
               mural={mural}
             >
               <MapView.Callout
-
                 // NAVIGATE TO OTHER SCREEN
                 title="Go to Scroll"
                 onPress={() => this.props.navigation.navigate('Scroll', { renderOne: true,
                   artistId: marker.id,
                   artistName: marker.name })}
-
                 style={styles.button}
               >
                 <View style={styles.bubble}>
-
-                  {/* NAVIGATE TO IMAGE */}
                   <CardSection style={styles.photoBackground} key={marker.id}>
-                        <TouchableHighlight onPress={() => this.props.navigation.navigate('Scroll', {
-                          renderOne: true,
-                          artistId: marker.id,
-                          artistName: marker.name
-                        })}>
-                          <Image style={{ width: 100, height: 100, borderWidth: 1, justifyContent: 'center', alignItems: 'center' }} source={{ uri: `${wall}` }} />
+                        <TouchableHighlight >
+                          <View
+                            // IMAGE IN MAP MARKER BUBBLE
+                          >
+                            {Platform.OS === 'ios' 
+                              ?
+                              <Text>ios image
+                                <Image source={ {uri: marker.wall} } style = {{height: 200, width: 250, resizeMode : 'stretch'} } 
+                                style = { styles.imageStyle }  
+                                />
+                              </Text>
+                              :
+                              <Text>android image
+                                <Image source={ {uri: marker.wall} } style = {{height: 200, width: 250, resizeMode : 'stretch'} } 
+                                style = { styles.imageStyle }  
+                                />
+                              </Text>
+                            }
+                          </View>
                         </TouchableHighlight>
                       </CardSection>                 
-                
-                  {/* TEXT IN MAP MARKER BUBBLE */}
-                  <Text> {name} </Text>
-
+                  <Text
+                    // TEXT IN MAP MARKER BUBBLE 
+                  > {name} </Text>
                 </View>
               </MapView.Callout>
             </MapView.Marker>
@@ -199,18 +177,11 @@ class MapScreen extends React.Component {
       </MapView>
     )
   }
-
-  // LINK TO URL
-  _handleOpenWithLinking = () => {
-    Linking.openURL(`${wall}`);
-  }
-
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
     paddingTop: Constants.statusBarHeight,
@@ -229,6 +200,12 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     borderColor: '#007a87',
     borderWidth: 0.5,
+  },
+  imageStyle: {
+    resizeMode: 'center',
+    height: 200,
+    flex: 1,
+    width: 200
   },
   developmentModeText: {
     marginBottom: 20,
