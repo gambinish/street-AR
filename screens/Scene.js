@@ -52,7 +52,6 @@ const transformPointToAR = (lat, long, deviceLatitude, deviceLongitude) => {
 }
 
 const checkDistance = (e, state, n) => {
-  // console.log('why u no werk', state)
   let start = {
     latitude: state._55.coords.latitude,
     longitude: state._55.coords.longitude
@@ -145,21 +144,39 @@ class App extends React.Component {
     this.startLooking();
     THREE.suppressExpoWarnings(true);
     ThreeAR.suppressWarnings();
+    const { navigation } = this.props;
+    mural = navigation.getParam('mural', 'NO-MURAL');
+    // console.log('all of my locations', this.state.locations);
+    // console.log('my current location', this.state.location);
+    console.log('componentDidMount')
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps !== this.props) {
-      let location = Location.getCurrentPositionAsync({})
-      this.setState({
-        locations: createLocations(this.props.geoPoints, {
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude
-        }),
-        location: this._getLocationAsync()
-      })
+      // let location = Location.getCurrentPositionAsync({})
+      // console.log('amiwrong', location);
+      // this.setState({
+      //   locations: createLocations(this.props.geoPoints, {
+      //     latitude: location.coords.latitude,
+      //     longitude: location.coords.longitude
+      //   }),
+      //   location: this._getLocationAsync()
+      // })
       this.startLooking();
       THREE.suppressExpoWarnings(true);
       ThreeAR.suppressWarnings();
+      const { navigation } = this.props;
+      mural = navigation.getParam('mural', 'NO-MURAL');
+      if (mural !== 'NO-MURAL') {
+        console.log('my old locations', this.state.locations);
+        mural.x = transformPointToAR(mural.latitude, mural.longitude, this.state.location._55.coords.latitude, this.state.location._55.coords.longitude).x
+        mural.z = transformPointToAR(mural.latitude, mural.longitude, this.state.location._55.coords.latitude, this.state.location._55.coords.longitude).z
+        this.setState({
+          locations: mural
+        })
+        console.log('all of my new locations', this.state.locations);
+      }
+      console.log('componentDidUpdate');
     }
   }
 
@@ -167,13 +184,23 @@ class App extends React.Component {
     await Location.watchPositionAsync({ distanceInterval: 10 }, (data) => {
       let location = Location.getCurrentPositionAsync({});
       this.setState({ location });
-      this.setState({
-        locations: createLocations(this.props.geoPoints, {
-          latitude: data.coords.latitude,
-          longitude: data.coords.longitude
-        }),
-      })
+      if (mural !== 'NO-MURAL') {
+        console.log('WAT WRONG', data)
+        mural.x = transformPointToAR(mural.latitude, mural.longitude, data.coords.latitude, data.coords.longitude).x
+        // mural.z = transformPointToAR(mural.latitude, mural.longitude, this.state.location._55.coords.latitude, this.state.location._55.coords.longitude).z
+        this.setState({
+          locations: mural
+        })
+      } else {
+        this.setState({
+          locations: createLocations(this.props.geoPoints, {
+            latitude: data.coords.latitude,
+            longitude: data.coords.longitude
+          }),
+        })
+      }
     })
+    console.log('startLooking')
   }
 
 
@@ -188,6 +215,9 @@ class App extends React.Component {
     } else {
       this._getLocationAsync();
     }
+    THREE.suppressExpoWarnings(true);
+    ThreeAR.suppressWarnings();
+    console.log('componentWillMount')
   }
 
   _getLocationAsync = async () => {
@@ -205,6 +235,7 @@ class App extends React.Component {
         longitude: location.coords.longitude
       })
     })
+    console.log('_getLocationAsync')
   }
 
   render() {
@@ -284,7 +315,7 @@ class App extends React.Component {
       // }
     // }
 //END TEST VIDEO
-    if (mural === 'NO-MURAL') {
+    if (mural === undefined) {
       let variables = [];
       setTimeout(() => {
         this.state.locations.map(e => {
@@ -318,7 +349,6 @@ class App extends React.Component {
             variables.push(varname);
           }
         })
-        console.log('multiple?', this.scene);
       }, 1000);
       
       setInterval(() => {
@@ -327,8 +357,6 @@ class App extends React.Component {
         })
         variables = [];
         this.state.locations.map(e => {
-          // console.log('my location', this.state.location._55.coords.latitude, this.state.location._55.coords.longitude);
-          // console.log('a;sldkfja;', e.tourspot, e.x, e.z);
           let closeBy = checkDistance(e, this.state.location, 30);
           let inRange = checkDistance(e, this.state.location, 100);
           if (closeBy.inRange) {
@@ -385,7 +413,6 @@ class App extends React.Component {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
-// }
 
 
 const styles = StyleSheet.create({

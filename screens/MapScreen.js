@@ -51,7 +51,7 @@ export default class MapScreen extends React.Component {
       });
     }
     let location = await Location.getCurrentPositionAsync({});
-    console.log('MAP CURRENT: ', location)
+    // console.log('MAP CURRENT: ', location)
     this.setState({
       location: location
     });
@@ -71,7 +71,7 @@ export default class MapScreen extends React.Component {
       });
     }
     let location = await Location.getCurrentPositionAsync({});
-    console.log('MAP CURRENT: ', location)
+    // console.log('MAP CURRENT: ', location)
     this.setState({
       location: location
     });
@@ -95,7 +95,7 @@ export default class MapScreen extends React.Component {
         longitude: marker.longitude
       };
     })
-    console.log(this.state.markers)
+    // console.log(this.state.markers)
     return (
       <MapView
         style={{ flex: 1 }}

@@ -115,6 +115,16 @@ class ScrollScreen extends Component {
     }
   }
 
+  goToAR(profile) {
+    return (
+      <CardSection>
+        <Button title='Find Mural' onPress={() => this.props.navigation.navigate('Scene', {
+          mural: profile
+        })} />
+      </CardSection>
+    )
+  }
+
   scrollAuto = () => {
     let { navigation } = this.props;
     let id = navigation.getParam('artistId');
@@ -178,6 +188,7 @@ class ScrollScreen extends Component {
                 </CardSection>
                 {this.renderDescription(profile.id, profile.description)}
                 {this.renderButtons(profile.id)}
+                {this.goToAR(profile)}
               </Card>
             </View>
           )
