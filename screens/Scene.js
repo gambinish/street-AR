@@ -284,7 +284,6 @@ class App extends React.Component {
       // }
     // }
 //END TEST VIDEO
-    if (mural === 'NO-MURAL') {
       let variables = [];
       setTimeout(() => {
         this.state.locations.map(e => {
@@ -360,10 +359,6 @@ class App extends React.Component {
           }
         })
       }, 10000);
-    } else {
-      console.log('CHOSEN ONE', mural);
-    }
-
   };
 
   // When the phone rotates, or the view changes size, this method will be called.
