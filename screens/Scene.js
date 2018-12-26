@@ -160,6 +160,7 @@ class App extends React.Component {
       this.startLooking();
       THREE.suppressExpoWarnings(true);
       ThreeAR.suppressWarnings();
+      this.forceUpdate()
     }
   }
 
@@ -167,6 +168,7 @@ class App extends React.Component {
     await Location.watchPositionAsync({ distanceInterval: 10 }, (data) => {
       let location = Location.getCurrentPositionAsync({});
       this.setState({ location });
+
       this.setState({
         locations: createLocations(this.props.geoPoints, {
           latitude: data.coords.latitude,
@@ -236,6 +238,7 @@ class App extends React.Component {
   }
 
   onContextCreate = async ({ gl, scale: pixelRatio, width, height }) => {
+    console.log('hitting');
     // This will allow ARKit to collect Horizontal surfaces
     AR.setPlaneDetection(AR.PlaneDetectionTypes.Horizontal);
     const WorldAlignmentTypes = {
