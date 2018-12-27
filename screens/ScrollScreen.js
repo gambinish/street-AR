@@ -188,7 +188,7 @@ class ScrollScreen extends Component {
                 </CardSection>
                 {this.renderDescription(profile.id, profile.description)}
                 {this.renderButtons(profile.id)}
-                {this.goToAR(profile)}
+                {/* {this.goToAR(profile)} */}
               </Card>
             </View>
           )

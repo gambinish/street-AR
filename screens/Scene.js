@@ -53,8 +53,8 @@ const transformPointToAR = (lat, long, deviceLatitude, deviceLongitude) => {
 
 const checkDistance = (e, state, n) => {
   let start = {
-    latitude: state._55.coords.latitude,
-    longitude: state._55.coords.longitude
+    latitude: state.coords.latitude,
+    longitude: state.coords.longitude
   }
 
   let end = {
@@ -84,7 +84,7 @@ const findClosest = (start, places) => {
       latitude: e.latitude,
       longitude: e.longitude
     };
-    let distance = haversine(start, end, { unit: 'mile' });
+    let distance = haversine(start, end, { unit: 'meter' });
     if (distance < closest) {
       closest = distance;
       location = e.name;
@@ -107,7 +107,6 @@ const createLocations = (locations, device) => {
         latitude: Number(lat),
         longitude: Number(lon)
       }, locations),
-      color: 'green',
       x: transformPointToAR(lat, lon, device.latitude, device.longitude).x,
       z: transformPointToAR(lat, lon, device.latitude, device.longitude).z
     }
@@ -133,77 +132,6 @@ class App extends React.Component {
     header: null,
   };
 
-  async componentDidMount() {
-    let location = await Location.getCurrentPositionAsync({})
-    this.setState({
-      locations: createLocations(this.props.geoPoints, {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude
-      }),
-    })
-    this.startLooking();
-    THREE.suppressExpoWarnings(true);
-    ThreeAR.suppressWarnings();
-    const { navigation } = this.props;
-    mural = navigation.getParam('mural', 'NO-MURAL');
-    // console.log('all of my locations', this.state.locations);
-    // console.log('my current location', this.state.location);
-    console.log('componentDidMount')
-  }
-
-  componentDidUpdate(prevProps) {
-    if (prevProps !== this.props) {
-      // let location = Location.getCurrentPositionAsync({})
-      // console.log('amiwrong', location);
-      // this.setState({
-      //   locations: createLocations(this.props.geoPoints, {
-      //     latitude: location.coords.latitude,
-      //     longitude: location.coords.longitude
-      //   }),
-      //   location: this._getLocationAsync()
-      // })
-      this.startLooking();
-      THREE.suppressExpoWarnings(true);
-      ThreeAR.suppressWarnings();
-      const { navigation } = this.props;
-      mural = navigation.getParam('mural', 'NO-MURAL');
-      if (mural !== 'NO-MURAL') {
-        console.log('my old locations', this.state.locations);
-        mural.x = transformPointToAR(mural.latitude, mural.longitude, this.state.location._55.coords.latitude, this.state.location._55.coords.longitude).x
-        mural.z = transformPointToAR(mural.latitude, mural.longitude, this.state.location._55.coords.latitude, this.state.location._55.coords.longitude).z
-        this.setState({
-          locations: mural
-        })
-        console.log('all of my new locations', this.state.locations);
-      }
-      console.log('componentDidUpdate');
-    }
-  }
-
-  startLooking = async () => {
-    await Location.watchPositionAsync({ distanceInterval: 10 }, (data) => {
-      let location = Location.getCurrentPositionAsync({});
-      this.setState({ location });
-      if (mural !== 'NO-MURAL') {
-        console.log('WAT WRONG', data)
-        mural.x = transformPointToAR(mural.latitude, mural.longitude, data.coords.latitude, data.coords.longitude).x
-        // mural.z = transformPointToAR(mural.latitude, mural.longitude, this.state.location._55.coords.latitude, this.state.location._55.coords.longitude).z
-        this.setState({
-          locations: mural
-        })
-      } else {
-        this.setState({
-          locations: createLocations(this.props.geoPoints, {
-            latitude: data.coords.latitude,
-            longitude: data.coords.longitude
-          }),
-        })
-      }
-    })
-    console.log('startLooking')
-  }
-
-
   async componentWillMount() {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     this.setState({ hasCameraPermission: status === 'granted' });
@@ -218,6 +146,46 @@ class App extends React.Component {
     THREE.suppressExpoWarnings(true);
     ThreeAR.suppressWarnings();
     console.log('componentWillMount')
+  }
+
+  async componentDidMount() {
+    let location = await Location.getCurrentPositionAsync({})
+    this.setState({
+      locations: createLocations(this.props.geoPoints, {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude
+      }),
+    })
+    this.startLooking();
+    THREE.suppressExpoWarnings(true);
+    ThreeAR.suppressWarnings();
+    const { navigation } = this.props;
+    mural = navigation.getParam('mural', 'NO-MURAL');
+    console.log('componentDidMount')
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps !== this.props) {
+      this.startLooking();
+      THREE.suppressExpoWarnings(true);
+      ThreeAR.suppressWarnings();
+      const { navigation } = this.props;
+      mural = navigation.getParam('mural', 'NO-MURAL');
+      console.log('componentDidUpdate');
+    }
+  }
+
+  startLooking = async () => {
+    await Location.watchPositionAsync({ distanceInterval: 5 }, (data) => {
+        this.setState({
+          locations: createLocations(this.props.geoPoints, {
+            latitude: data.coords.latitude,
+            longitude: data.coords.longitude
+          }),
+          location: data
+        })
+    })
+    console.log('startLooking')
   }
 
   _getLocationAsync = async () => {
@@ -239,6 +207,7 @@ class App extends React.Component {
   }
 
   render() {
+    // console.log('pls render', mural);
     if (Platform.OS === 'android') {
       return (
         <View style={styles.container}>
@@ -290,39 +259,59 @@ class App extends React.Component {
 
     this.scene.add(new THREE.AmbientLight(0xffffff));
 
-//TESING VIDEO
-    // this.video = document.createElement('video');
-    // this.video.src = 'https://www.youtube.com/watch?v=5dbG4wqN0rQ';
-    // this.video.load();
-    // this.video.play();
+    let variables = [];
 
-    // this.videoCanvas = document.createElement('canvas');
-    // this.videoCanvasctx = this.videoCanvas.getContext('2d');
-    // this.videoCanvas.width = 8;
-    // this.videoCanvas.height = 6;
+    //Initial Loading Screen
+    setTimeout(() => {
+      this.state.locations.map(e => {
+        //Checking Mural Distance from User
+        let closeBy = checkDistance(e, this.state.location, 20);
+        let inRange = checkDistance(e, this.state.location, 100);
+        //Murals within 20 meters
+        if (closeBy.inRange) {
+          const geometry = new THREE.ConeGeometry(1,4,5);
+          const material = new THREE.MeshPhongMaterial({
+            color: 'blue',
+          });
+          let varname = 'pointer' + e.id;
+          window[varname] = new THREE.Mesh(geometry, material);
+          window[varname].position.x = e.x;
+          window[varname].position.z = e.z;
+          window[varname].rotation.z = 3;
+          window[varname].position.y = 6;
+          this.scene.add(window[varname]);
+          variables.push(varname);
+        //Murals within 100 meters
+        } else if (inRange.inRange && !closeBy.inRange) {
+          const geometry = new THREE.ConeGeometry(1,4,5);
+          const material = new THREE.MeshPhongMaterial({
+            color: 'red',
+          });
+          let varname = 'pointer' + e.id;
+          window[varname] = new THREE.Mesh(geometry, material);
+          window[varname].position.x = e.x;
+          window[varname].position.z = e.z;
+          window[varname].rotation.z = 3;
+          window[varname].position.y = 6;
+          this.scene.add(window[varname]);
+          variables.push(varname);
+        }
+      })
+    }, 1000);
 
-    // this.videoCanvasctx.fillStyle = '#000000';
-    // this.videoCanvasctx.fillRect(0,0,8,6);
-
-    // this.boxTexture = new VIDEO.Texture(this.videoCanvas);
-    // let boxMaterial = new VIDEO.MeshBasicMaterial({map: this.boxTexture, overdraw: 0.5})
-    // this.box = new VIDEO.BoxGeometry(1,1,1);
-    // this.boxMesh = new VIDEO.Mesh(this.box, boxMaterial);
-
-    // function render() {
-    //   if (this.video.readyState === this.video.HAVE_ENOUGH_DATA) {
-    //     this.videoCanvasctx.drawImage(this.video, 0, 0);
-      // }
-    // }
-//END TEST VIDEO
-    if (mural === undefined) {
-      let variables = [];
-      setTimeout(() => {
+    //Updates Screen every 10 seconds
+    setInterval(() => {
+      console.log('is this changing', this.state.locations[0]);
+      //Removes old mural points
+      variables.map(e => {
+        this.scene.remove(window[e]);
+      })
+      variables = [];
         this.state.locations.map(e => {
           let closeBy = checkDistance(e, this.state.location, 20);
           let inRange = checkDistance(e, this.state.location, 100);
           if (closeBy.inRange) {
-            const geometry = new THREE.ConeGeometry((1/20)*closeBy.distance, (4/20)*closeBy.distance, (5/20)*closeBy.distance);
+            const geometry = new THREE.ConeGeometry(1,4,5);
             const material = new THREE.MeshPhongMaterial({
               color: 'blue',
             });
@@ -331,11 +320,11 @@ class App extends React.Component {
             window[varname].position.x = e.x;
             window[varname].position.z = e.z;
             window[varname].rotation.z = 3;
-            window[varname].position.y = 10;
+            window[varname].position.y = 6;
             this.scene.add(window[varname]);
             variables.push(varname);
           } else if (inRange.inRange && !closeBy.inRange) {
-            const geometry = new THREE.ConeGeometry((1/20)*inRange.distance, (4/20)*inRange.distance, (5/20)*inRange.distance);
+            const geometry = new THREE.ConeGeometry(1,4,5);
             const material = new THREE.MeshPhongMaterial({
               color: 'red',
             });
@@ -344,53 +333,12 @@ class App extends React.Component {
             window[varname].position.x = e.x;
             window[varname].position.z = e.z;
             window[varname].rotation.z = 3;
-            window[varname].position.y = 10;
+            window[varname].position.y = 6;
             this.scene.add(window[varname]);
             variables.push(varname);
           }
         })
-      }, 1000);
-      
-      setInterval(() => {
-        variables.map(e => {
-          this.scene.remove(window[e]);
-        })
-        variables = [];
-        this.state.locations.map(e => {
-          let closeBy = checkDistance(e, this.state.location, 30);
-          let inRange = checkDistance(e, this.state.location, 100);
-          if (closeBy.inRange) {
-            const geometry = new THREE.ConeGeometry((1/20)*closeBy.distance, (4/20)*closeBy.distance, (5/20)*closeBy.distance);
-            const material = new THREE.MeshPhongMaterial({
-              color: 'blue',
-            });
-            let varname = 'pointer' + e.id;
-            window[varname] = new THREE.Mesh(geometry, material);
-            window[varname].position.x = e.x;
-            window[varname].position.z = e.z;
-            window[varname].rotation.z = 3;
-            window[varname].position.y = 10;
-            this.scene.add(window[varname]);
-            variables.push(varname);
-          } else if (inRange.inRange && !closeBy.inRange) {
-            const geometry = new THREE.ConeGeometry((1/20)*inRange.distance, (4/20)*inRange.distance, (5/20)*inRange.distance);
-            const material = new THREE.MeshPhongMaterial({
-              color: 'red',
-            });
-            let varname = 'pointer' + e.id;
-            window[varname] = new THREE.Mesh(geometry, material);
-            window[varname].position.x = e.x;
-            window[varname].position.z = e.z;
-            window[varname].rotation.z = 3;
-            window[varname].position.y = 10;
-            this.scene.add(window[varname]);
-            variables.push(varname);
-          }
-        })
-      }, 10000);
-    } else {
-      console.log('CHOSEN ONE', mural);
-    }
+    }, 3000);
 
   };
 
