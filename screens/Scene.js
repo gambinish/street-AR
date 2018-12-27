@@ -6,6 +6,8 @@ import { View as GraphicsView } from 'expo-graphics';
 import { connect } from 'react-redux';
 import { getMuralLocations } from '../redux/app-redux.js';
 import { Platform, View, Text, Button, StyleSheet } from 'react-native';
+import { THREEx } from './threex';
+import { Stats } from './stats.min.js';
 console.disableYellowBox = true;
 const haversine = require('haversine');
 let mural;
@@ -230,7 +232,18 @@ class App extends React.Component {
           isArRunningStateEnabled
           isArCameraStateEnabled
           arTrackingConfiguration={AR.TrackingConfigurations.World}
-        />
+        >
+        <Video
+        source={{ uri: 'https://www.youtube.com/watch?v=ApXoWvfEYVU' }}
+        rate={1.0}
+        volume={1.0}
+        isMuted={false}
+        resizeMode="cover"
+        shouldPlay
+        isLooping
+        style={{ width: 300, height: 300 }}
+      />
+      </GraphicsView>
       )
     };
   }
@@ -251,6 +264,7 @@ class App extends React.Component {
       pixelRatio,
       width,
       height,
+      antialias: true
     });
 
     this.scene = new THREE.Scene();
@@ -263,6 +277,40 @@ class App extends React.Component {
 
     //Initial Loading Screen
     setTimeout(() => {
+      var url = 'https://www.youtube.com/watch?v=5dbG4wqN0rQ';
+      var videoTexture = new THREEx.VideoTexture(url);
+      var video	= videoTexture.video
+      video.autoplay = true;
+
+      var geometry1	= new THREE.CubeGeometry(1,1,1);
+	    var material1	= new THREE.MeshBasicMaterial({
+	    map	: videoTexture.texture
+	    });
+      var mesh	= new THREE.Mesh( geometry1, material1 );
+      mesh.position.z = -4;
+      // this.scene.add( mesh );
+
+      // var video = document.createElement('video');
+      // video.loop = true;
+      // video.muted = true;
+      // video.src = 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+      // // video.setAttribute( 'webkit-playsinline', 'webkit-playsinline' );
+      // // video.play();
+
+      // var texture = new THREE.VideoTexture( video );
+      //     texture.minFilter = THREE.LinearFilter;
+      //     texture.magFilter = THREE.LinearFilter;
+      //     texture.format = THREE.RGBFormat;
+
+      // var material1   = new THREE.MeshBasicMaterial( { map : texture } );
+
+      // const geometry1 = new THREE.PlaneGeometry( 1, 1, 1 );
+      // // var material1 = new THREE.MeshBasicMaterial( { map: texture } );
+      // var plane = new THREE.Mesh( geometry1, material1 );
+      // plane.position.z = -4;
+      // this.scene.add( plane )
+
+
       this.state.locations.map(e => {
         //Checking Mural Distance from User
         let closeBy = checkDistance(e, this.state.location, 20);
