@@ -2,13 +2,34 @@ import * as React from 'react';
 import * as Expo from 'expo';
 import { MapView } from 'expo';
 import { Constants, WebBrowser, Location, Permissions } from 'expo';
-// import { Linking, Button, Platform, StyleSheet, Text, View, Image, ImageBackground, TouchableHighlight, TouchableNativeFeedback } from 'react-native';
-import { Linking, Button, Platform, StyleSheet, Text, View, Image, TouchableHighlight, TouchableNativeFeedback } from 'react-native';
+import { Linking, Button, Platform, StyleSheet, Text, View, Image, TouchableHighlight } from 'react-native';
 import { MonoText } from '../components/StyledText';
 import GeoPoints from '../data/GeoPoints'
 import ScrollScreen from './ScrollScreen'
+import { connect } from 'react-redux';
+import CardSection from '../components/common/CardSection'
 
-export default class MapScreen extends React.Component {
+const mapStateToProps = (state) => {
+  return {
+    artistName: state.artistName,
+    homepage: null,
+    geoPoints: state.geoPoints
+  };
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    findArtist: (text) => {
+      dispatch(findArtist(text))
+    },
+    getMuralLocations: () => {
+      dispatch(getMuralLocations())
+    }
+  };
+}
+
+class MapScreen extends React.Component {
+  
   constructor(props) {
     super(props);
     this.state = {
@@ -27,75 +48,54 @@ export default class MapScreen extends React.Component {
       }
     };
   }
+  
   static navigationOptions = {
     title: 'Map'
   }
+  
   // simulate db request
   fetchLocationData = (coordMap) => {
-    // console.log('FETCHED: ', coordMap)
-    // set state to db data
     this.setState({
       isLoading: false,
       markers: coordMap,
     })
   }
+
   componentDidMount = async () => {
-
-    // LINK TO URL
-    Linking.addEventListener('url', this._handleOpenURL);
-
+    // PERMISSIONS
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
     if (status !== 'granted') {
       this.setState({
         errorMessage: 'Permission to access location was denied',
       });
     }
+
     let location = await Location.getCurrentPositionAsync({});
-    console.log('MAP CURRENT: ', location)
+    console.log('\nMAP CURRENT LOCATION:\n ', location)
     this.setState({
       location: location
     });
-    // console.log('IMPORTED: ', GeoPoints)
     this.fetchLocationData(GeoPoints)
   }
-
-  componentDidUpdate = async () => {
-
-    // LINK TO URL
-    Linking.addEventListener('url', this._handleOpenURL);
-
-    let { status } = await Permissions.askAsync(Permissions.LOCATION);
-    if (status !== 'granted') {
-      this.setState({
-        errorMessage: 'Permission to access location was denied',
-      });
-    }
-    let location = await Location.getCurrentPositionAsync({});
-    console.log('MAP CURRENT: ', location)
-    this.setState({
-      location: location
-    });
-    // console.log('IMPORTED: ', GeoPoints)
-    this.fetchLocationData(GeoPoints)
-  }
-
 
   componentWillUnmount() {
     Linking.removeEventListener('url', this._handleOpenURL);
   }
+
   _handleOpenURL(event) {
     console.log(event.url);
   }
+
   render() {
-    // console.log('THIS.STATE.LOCATION: ', this.state.location)
-    // console.log('COORDS: ', this.state.location.coords)
     this.state.markers.map((marker) => {
+      console.log('\nMARKER:\n', marker )
       const coords = {
         latitude: marker.latitude,
         longitude: marker.longitude
       };
     })
-    console.log(this.state.markers)
+    console.log('\nTHIS.STATE.MARKERS:\n',this.state.markers)
+  
     return (
       <MapView
         style={{ flex: 1 }}
@@ -107,6 +107,7 @@ export default class MapScreen extends React.Component {
         }}
       >
         <MapView.Marker
+          // CURRENT LOCATION 
           style={styles.currentLocal}
           pinColor='green'
           coordinate={this.state.location.coords}
@@ -116,7 +117,6 @@ export default class MapScreen extends React.Component {
           const coords = {
             latitude: marker.latitude,
             longitude: marker.longitude,
-            // id: marker.id
           };
           const id = marker.id
           const name = marker.name
@@ -124,8 +124,12 @@ export default class MapScreen extends React.Component {
           const wall = marker.wall
           const artist = marker.artist
           const mural = marker.image
+          console.log('\nASSESTS IMAGE:\n',mural)
+          console.log('\nCHOOSE MARKER:\n',marker)
+  
           return (
             <MapView.Marker
+              // MAP MARKER 
               coordinate={coords}
               key={id}
               title={name}
@@ -135,59 +139,41 @@ export default class MapScreen extends React.Component {
               mural={mural}
             >
               <MapView.Callout
-
                 // NAVIGATE TO OTHER SCREEN
                 title="Go to Scroll"
-                onPress={() => this.props.navigation.navigate('Scroll', { renderOne: true })}
-
-                //  LINK TO URL
-                // onPress={this._handleOpenWithLinking = (
-                //   () => { Linking.openURL(`${wall}`) }
-                // )}
+                onPress={() => this.props.navigation.navigate('Scroll', { renderOne: true,
+                  artistId: marker.id,
+                  artistName: marker.name })}
                 style={styles.button}
               >
                 <View style={styles.bubble}>
-
-                  {/* REFACTOR COMPONENT LOGIC FOR OS */}
-                  {/* NAVIGATE TO OTHER SCREEN */}
-                  <TouchableHighlight
-                    title="Go to Scroll"
-                    onPress={() => this.props.navigation.navigate('Scroll', { renderOne: true })}
-                  >
-
-                    {/* SHOW IMAGE IN MAP MARKER BUBBLE */}
-                    <Text >
-                      {Platform.OS === 'ios'
-                        ?
-                        <Image
-                          style={{ width: 100, height: 100, borderWidth: 1, justifyContent: "center", alignItems: "center" }}
-                          source={{ uri: `${wall}` }}
-                        ></Image>
-                        :
-                        <Image
-                          style={{ width: 100, height: 100, borderWidth: 1, justifyContent: "center" }}
-                          source={{ uri: `${wall}` }}
-                        // source={require(`../ScrollScreen/`)}
-                        ></Image>
-                      }
-                    </Text>
-                  </TouchableHighlight>
-
-                  {/* TEXT IN MAP MARKER BUBBLE */}
-                  <Text> {name} </Text>
-
-                  {/* TEXT ON SEPERATE LINES */}
-                  {/* <Text> {'\n'}{marker.name}{'\n'}{description}{'\n'}{'\n'}{wall}{'\n'}{'\n'}{mural}{'\n'}{'\n'}</Text> */}
-
-                  {/* BUTTON IN MAP MARKER BUBBLE */}
-                  {/* <Button
-                    title="enlarge"
-                    onPress={() => this.props.navigation.navigate('Scroll', {
-                      renderOne: true
-                    })}
-                    onPress={this._handleOpenWithLinking}
-                    style={styles.button}
-                  /> */}
+                  <CardSection style={styles.photoBackground} key={marker.id}>
+                    <TouchableHighlight >
+                      <View
+                        // IMAGE IN MAP MARKER BUBBLE
+                      >
+                        {Platform.OS === 'ios' 
+                          ?
+                          <Text>
+                            <Image
+                              style={{ width: 100, height: 100, borderWidth: 1, justifyContent: "center", alignItems: "center" }}
+                              source={{ uri: `${wall}` }}
+                            />
+                          </Text>
+                          :
+                          <Text>
+                            <Image 
+                              source={ {uri: marker.wall} } style = {{height: 200, width: 250, resizeMode : 'stretch'} } 
+                              style = { styles.imageStyle }
+                            />
+                          </Text>
+                        }
+                      </View>
+                    </TouchableHighlight>
+                  </CardSection>                 
+                  <Text
+                    // TEXT IN MAP MARKER BUBBLE 
+                  > {name} </Text>
                 </View>
               </MapView.Callout>
             </MapView.Marker>
@@ -196,18 +182,11 @@ export default class MapScreen extends React.Component {
       </MapView>
     )
   }
-
-  // LINK TO URL
-  _handleOpenWithLinking = () => {
-    Linking.openURL(`${wall}`);
-  }
-
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
     paddingTop: Constants.statusBarHeight,
@@ -226,6 +205,12 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     borderColor: '#007a87',
     borderWidth: 0.5,
+  },
+  imageStyle: {
+    resizeMode: 'center',
+    height: 200,
+    flex: 1,
+    width: 200
   },
   developmentModeText: {
     marginBottom: 20,
@@ -310,3 +295,5 @@ const styles = StyleSheet.create({
     color: '#2e78b7',
   },
 });
+
+export default connect(mapStateToProps, mapDispatchToProps)(MapScreen);
