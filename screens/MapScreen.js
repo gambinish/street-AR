@@ -71,13 +71,11 @@ class MapScreen extends React.Component {
     }
 
     let location = await Location.getCurrentPositionAsync({});
-    console.log('MAP CURRENT: ', location)
+    console.log('\nMAP CURRENT LOCATION:\n ', location)
     this.setState({
       location: location
     });
     this.fetchLocationData(GeoPoints)
-    
-    // this.props.getMuralLocations();
   }
 
   componentWillUnmount() {
@@ -90,12 +88,13 @@ class MapScreen extends React.Component {
 
   render() {
     this.state.markers.map((marker) => {
+      console.log('\nMARKER:\n', marker )
       const coords = {
         latitude: marker.latitude,
         longitude: marker.longitude
       };
     })
-    console.log(this.state.markers)
+    console.log('\nTHIS.STATE.MARKERS:\n',this.state.markers)
   
     return (
       <MapView
@@ -108,6 +107,7 @@ class MapScreen extends React.Component {
         }}
       >
         <MapView.Marker
+          // CURRENT LOCATION 
           style={styles.currentLocal}
           pinColor='green'
           coordinate={this.state.location.coords}
@@ -124,9 +124,12 @@ class MapScreen extends React.Component {
           const wall = marker.wall
           const artist = marker.artist
           const mural = marker.image
+          console.log('\nASSESTS IMAGE:\n',mural)
+          console.log('\nCHOOSE MARKER:\n',marker)
   
           return (
             <MapView.Marker
+              // MAP MARKER 
               coordinate={coords}
               key={id}
               title={name}
@@ -145,27 +148,27 @@ class MapScreen extends React.Component {
               >
                 <View style={styles.bubble}>
                   <CardSection style={styles.photoBackground} key={marker.id}>
-                        <TouchableHighlight >
-                          <View
-                            // IMAGE IN MAP MARKER BUBBLE
-                          >
-                            {Platform.OS === 'ios' 
-                              ?
-                              <Text>ios image
-                                <Image source={ {uri: marker.wall} } style = {{height: 200, width: 250, resizeMode : 'stretch'} } 
-                                style = { styles.imageStyle }  
-                                />
-                              </Text>
-                              :
-                              <Text>android image
-                                <Image source={ {uri: marker.wall} } style = {{height: 200, width: 250, resizeMode : 'stretch'} } 
-                                style = { styles.imageStyle }  
-                                />
-                              </Text>
-                            }
-                          </View>
-                        </TouchableHighlight>
-                      </CardSection>                 
+                    <TouchableHighlight >
+                      <View
+                        // IMAGE IN MAP MARKER BUBBLE
+                      >
+                        {Platform.OS === 'ios' 
+                          ?
+                          <Text>
+                            <Image source={ {uri: marker.wall} } style = {{height: 200, width: 250, resizeMode : 'stretch'} } 
+                            style = { styles.imageStyle }  
+                            />
+                          </Text>
+                          :
+                          <Text>
+                            <Image source={ {uri: marker.wall} } style = {{height: 200, width: 250, resizeMode : 'stretch'} } 
+                            style = { styles.imageStyle }  
+                            />
+                          </Text>
+                        }
+                      </View>
+                    </TouchableHighlight>
+                  </CardSection>                 
                   <Text
                     // TEXT IN MAP MARKER BUBBLE 
                   > {name} </Text>
