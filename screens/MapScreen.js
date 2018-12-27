@@ -155,14 +155,16 @@ class MapScreen extends React.Component {
                         {Platform.OS === 'ios' 
                           ?
                           <Text>
-                            <Image source={ {uri: marker.wall} } style = {{height: 200, width: 250, resizeMode : 'stretch'} } 
-                            style = { styles.imageStyle }  
+                            <Image
+                              style={{ width: 100, height: 100, borderWidth: 1, justifyContent: "center", alignItems: "center" }}
+                              source={{ uri: `${wall}` }}
                             />
                           </Text>
                           :
                           <Text>
-                            <Image source={ {uri: marker.wall} } style = {{height: 200, width: 250, resizeMode : 'stretch'} } 
-                            style = { styles.imageStyle }  
+                            <Image 
+                              source={ {uri: marker.wall} } style = {{height: 200, width: 250, resizeMode : 'stretch'} } 
+                              style = { styles.imageStyle }
                             />
                           </Text>
                         }
