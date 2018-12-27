@@ -267,7 +267,22 @@ class App extends React.Component {
     this.camera = new ThreeAR.Camera(width, height, 0.0001, 1000);
 
     this.scene.add(new THREE.AmbientLight(0xffffff));
+    
 
+  //   function render(){
+  //     //check for vid data
+  //     if(video.readyState === video.HAVE_ENOUGH_DATA){
+  //       //draw video to canvas starting from upper left corner
+  //       videocanvasctx.drawImage(video, 0, 0);
+  //       //tell texture object it needs to be updated
+  //       spheretexture.needsUpdate = true;
+  //     }
+  //       renderer.render(scene, camera); //Same as how you always render a 3js scene
+        
+  //       window.requestAnimationFrame(render); //When finished rendering, ask to render again on the next frame
+  // }
+  
+  // window.requestAnimationFrame(render); //Start render loop
     
     setTimeout(() => {
       this.state.locations.map(e => {
@@ -286,6 +301,40 @@ class App extends React.Component {
         //   this.scene.add(this.i);
         //   return;
         // } else 
+
+        // const video = document.createElement('video');
+        // video.src = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
+        // // this.video.load();
+        // video.play();
+    
+        // var texture = new THREE.VideoTexture(video);
+    
+        // const geometry1 = new THREE.PlaneGeometry( 1, 1, 1 );
+        // var material1 = new THREE.MeshBasicMaterial( { map: texture } );
+        // var plane = new THREE.Mesh( geometry1, material1 );
+        // plane.position.z = -4;
+        // this.scene.add( plane )
+
+        var video = document.createElement( 'video' );
+        video.loop = true;
+        video.muted = true;
+        video.src = 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+        // video.setAttribute( 'webkit-playsinline', 'webkit-playsinline' );
+        video.play();
+
+        var texture = new THREE.VideoTexture( video );
+            texture.minFilter = THREE.LinearFilter;
+            texture.magFilter = THREE.LinearFilter;
+            texture.format = THREE.RGBFormat;
+
+        var material1   = new THREE.MeshBasicMaterial( { map : texture } );
+
+        const geometry1 = new THREE.PlaneGeometry( 1, 1, 1 );
+        // var material1 = new THREE.MeshBasicMaterial( { map: texture } );
+        var plane = new THREE.Mesh( geometry1, material1 );
+        plane.position.z = -4;
+        this.scene.add( plane )
+
         if (inRange.inRange) {
           const geometry = new THREE.ConeGeometry(1, 4, 5);
           const material = new THREE.MeshPhongMaterial({
