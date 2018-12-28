@@ -168,7 +168,7 @@ class ScrollScreen extends Component {
                 {/* Beginning of Card Header */}
                 <CardSection>
                   <View>
-                    <Image style={styles.thumbnailStyle} source={{ uri: profile.pic }} />
+                    <Image style={{width: 50, height: 50}} source={{ uri: profile.propic }} />
                   </View>
                   <View style={styles.headerContentStyle}>
                     <RangaText style={styles.headerTextStyle}>

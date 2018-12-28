@@ -1,13 +1,10 @@
 import React from 'react';
 import { AR, Camera, Permissions, Location, Constants } from 'expo';
 import ExpoTHREE, { AR as ThreeAR, THREE } from 'expo-three';
-import { THREE as VIDEO } from 'three';
 import { View as GraphicsView } from 'expo-graphics';
 import { connect } from 'react-redux';
 import { getMuralLocations } from '../redux/app-redux.js';
 import { Platform, View, Text, Button, StyleSheet } from 'react-native';
-import { THREEx } from './threex';
-import { Stats } from './stats.min.js';
 console.disableYellowBox = true;
 const haversine = require('haversine');
 let mural;
@@ -277,17 +274,17 @@ class App extends React.Component {
 
     //Initial Loading Screen
     setTimeout(() => {
-      var url = 'https://www.youtube.com/watch?v=5dbG4wqN0rQ';
-      var videoTexture = new THREEx.VideoTexture(url);
-      var video	= videoTexture.video
-      video.autoplay = true;
+      // var url = 'https://www.youtube.com/watch?v=5dbG4wqN0rQ';
+      // var videoTexture = new THREEx.VideoTexture(url);
+      // var video	= videoTexture.video
+      // video.autoplay = true;
 
-      var geometry1	= new THREE.CubeGeometry(1,1,1);
-	    var material1	= new THREE.MeshBasicMaterial({
-	    map	: videoTexture.texture
-	    });
-      var mesh	= new THREE.Mesh( geometry1, material1 );
-      mesh.position.z = -4;
+      // var geometry1	= new THREE.CubeGeometry(1,1,1);
+	    // var material1	= new THREE.MeshBasicMaterial({
+	    // map	: videoTexture.texture
+	    // });
+      // var mesh	= new THREE.Mesh( geometry1, material1 );
+      // mesh.position.z = -4;
       // this.scene.add( mesh );
 
       // var video = document.createElement('video');
@@ -326,7 +323,7 @@ class App extends React.Component {
           window[varname].position.x = e.x;
           window[varname].position.z = e.z;
           window[varname].rotation.z = 3;
-          window[varname].position.y = 6;
+          window[varname].position.y = 4;
           this.scene.add(window[varname]);
           variables.push(varname);
         //Murals within 100 meters
@@ -340,7 +337,7 @@ class App extends React.Component {
           window[varname].position.x = e.x;
           window[varname].position.z = e.z;
           window[varname].rotation.z = 3;
-          window[varname].position.y = 6;
+          window[varname].position.y = 4;
           this.scene.add(window[varname]);
           variables.push(varname);
         }
@@ -368,7 +365,7 @@ class App extends React.Component {
             window[varname].position.x = e.x;
             window[varname].position.z = e.z;
             window[varname].rotation.z = 3;
-            window[varname].position.y = 6;
+            window[varname].position.y = 4;
             this.scene.add(window[varname]);
             variables.push(varname);
           } else if (inRange.inRange && !closeBy.inRange) {
@@ -381,7 +378,7 @@ class App extends React.Component {
             window[varname].position.x = e.x;
             window[varname].position.z = e.z;
             window[varname].rotation.z = 3;
-            window[varname].position.y = 6;
+            window[varname].position.y = 4;
             this.scene.add(window[varname]);
             variables.push(varname);
           }
