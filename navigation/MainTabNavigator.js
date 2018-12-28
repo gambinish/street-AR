@@ -65,6 +65,11 @@ export default NavigatingStack = createBottomTabNavigator({
         />
       ),
       tabBarOnPress: ({ navigation, defaultHandler }) => {
+        // if (navigation.isFocused()) {
+        //   return;
+        // } else {
+        //   console.log('here');
+        // }
         defaultHandler();
       }
     }

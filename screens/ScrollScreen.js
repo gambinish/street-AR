@@ -115,27 +115,18 @@ class ScrollScreen extends Component {
     }
   }
 
-  goToAR(profile) {
-    return (
-      <CardSection>
-        <Button title='Find Mural' onPress={() => this.props.navigation.navigate('Scene', {
-          mural: profile
-        })} />
-      </CardSection>
-    )
-  }
-
   scrollAuto = () => {
     let { navigation } = this.props;
     let id = navigation.getParam('artistId');
-    if (id !== 'NO-ID') {
-      let scrollYPos = this.state.screenHeight * (id - 1);
-      this.scroller.scrollTo({ x: 0, y: scrollYPos, animated: true })
-    }
+      if (id !== 'NO-ID') {
+        let scrollYPos = this.state.screenHeight * (id - 1);
+        this.scroller.scrollTo({ x: 0, y: scrollYPos, animated: true })
+      }
   }
 
   onClick = (clickId) => {
     // fire action to toggle description
+    console.log('clickId', clickId)
     this.props.expandDetail(clickId)
   }
 
@@ -157,12 +148,10 @@ class ScrollScreen extends Component {
     // const { navigation } = this.props;
     // const artistId = navigation.getParam('artistId', 'NO-ID');
     // const artistName = navigation.getParam('artistName', 'NO-NAME');
-
     return (
       <ScrollView ref={(scroller) => { this.scroller = scroller }}>
         {/* <Text>{artistId}, {artistName}</Text> */}
         {this.props.geoPoints.map((profile) => {
-          console.log('PROFILE: ', profile)
           return (
             <View key={profile.id} style={styles.screen}>
               <Card id={profile.id}>
@@ -189,7 +178,6 @@ class ScrollScreen extends Component {
                 </CardSection>
                 {this.renderDescription(profile.id, profile.description)}
                 {this.renderButtons(profile.id)}
-                {/* {this.goToAR(profile)} */}
               </Card>
             </View>
           )
