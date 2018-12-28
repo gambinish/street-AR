@@ -185,26 +185,26 @@ export default class CameraScreen extends React.Component {
     this.setState({ isCameraFunctionsDisplayed: false });
     // {this.renderArtistData()}
 
-    setTimeout(
-      function() {
-        this.setState({ isNoMural: true });
-        this.setState({ isLoading: false });
-      }
-      .bind(this),
-      3000
-    );
+    // setTimeout(
+    //   function() {
+    //     this.setState({ isNoMural: true });
+    //     this.setState({ isLoading: false });
+    //   }
+    //   .bind(this),
+    //   3000
+    // );
 
-    setTimeout(
-      function() {
-        this.setState({ isNoMural: false });
-        this.setState({ isCameraFunctionsDisplayed: true });
-      }
-      .bind(this),
-      7000
-    );
+    // setTimeout(
+    //   function() {
+    //     this.setState({ isNoMural: false });
+    //     this.setState({ isCameraFunctionsDisplayed: true });
+    //   }
+    //   .bind(this),
+    //   7000
+    // );
 
     axios
-      .post('http://192.168.200.245:9000/image-upload', formData)
+      .post('http://34.213.121.74:9000/image-upload', formData)
       .then((response) => {
 
           console.log('FRONT END POST RESPONSE: ', response.data)
@@ -215,10 +215,22 @@ export default class CameraScreen extends React.Component {
               artistId: 7,
               artistName: 'Audrey Kawasaki'
             })
-            this.setState({ isLoading: false })
+
+            this.setState({ isLoading: false });
+            this.setState({ isCameraFunctionsDisplayed: true });
             // this.renderArtistData()
           } else {
-            this.setState({ isLoading: false })
+            this.setState({ isNoMural: true });
+            this.setState({ isLoading: false });
+
+            setTimeout(
+              function() {
+                this.setState({ isNoMural: false });
+                this.setState({ isCameraFunctionsDisplayed: true });
+              }
+              .bind(this),
+              3000
+          );
             // this.renderArtistData()
           }
       })
@@ -361,7 +373,7 @@ export default class CameraScreen extends React.Component {
   renderArtistData = () => 
     <View
       style={styles.artistBar}>
-        <Text style={styles.artistData}>Detecting Image</Text>
+        <Text style={styles.artistData}>Detecting Image...</Text>
     </View>
 
   renderNoImageDetected = () => 
@@ -471,10 +483,12 @@ export default class CameraScreen extends React.Component {
 
 const styles = StyleSheet.create({
   artistData: {
-    color: 'red',
+    fontSize: 50,
+    color: 'green',
     display: 'flex'
   },
   noImage: {
+    fontSize: 50,
     color: 'red',
     display: 'flex'
   },
