@@ -21,8 +21,8 @@ export default NavigatingStack = createBottomTabNavigator({
           focused={focused}
           name={
             Platform.OS === 'ios'
-            ? `ios-information-circle${focused ? '' : '-outline'}`
-            : 'md-information-circle'
+            ? `ios-home${focused ? '' : '-outline'}`
+            : 'ios-home'
           }
         />
       ),
@@ -40,8 +40,8 @@ export default NavigatingStack = createBottomTabNavigator({
           focused={focused}
           name={
             Platform.OS === 'ios'
-            ? `ios-information-circle${focused ? '' : '-outline'}`
-            : 'md-information-circle'
+            ? `ios-map${focused ? '' : '-outline'}`
+            : 'ios-map'
           }
         />
       ),
@@ -59,8 +59,8 @@ export default NavigatingStack = createBottomTabNavigator({
           focused={focused}
           name={
             Platform.OS === 'ios'
-            ? `ios-information-circle${focused ? '' : '-outline'}`
-            : 'md-information-circle'
+            ? `ios-list-box${focused ? '' : '-outline'}`
+            : 'ios-list-box'
           }
         />
       ),
@@ -78,8 +78,8 @@ export default NavigatingStack = createBottomTabNavigator({
           focused={focused}
           name={
             Platform.OS === 'ios'
-            ? `ios-information-circle${focused ? '' : '-outline'}`
-            : 'md-information-circle'
+            ? `ios-cube${focused ? '' : '-outline'}`
+            : 'ios-cube'
           }
         />
       ),
@@ -97,8 +97,8 @@ export default NavigatingStack = createBottomTabNavigator({
           focused={focused}
           name={
             Platform.OS === 'ios'
-            ? `ios-information-circle${focused ? '' : '-outline'}`
-            : 'md-information-circle'
+            ? `ios-camera${focused ? '' : '-outline'}`
+            : 'ios-camera'
           }
         />
       ),
