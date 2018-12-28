@@ -207,12 +207,25 @@ export default class CameraScreen extends React.Component {
       .post('http://34.213.121.74:9000/image-upload', formData)
       .then((response) => {
 
+        let highestDetectedValue = 0;
+        let highestDetectedId;
+
+        for ( let i = 0; i < response.data.concepts.length; i++ ) {
+          if ( highestDetectedValue < response.data.concepts[i].value ) {
+            highestDetectedValue = response.data.concepts[i].value;
+            highestDetectedId = parseInt(response.data.concepts[i].name.replace(/[^0-9]/g, ''), 10);
+          }
+        }
+
+
+
+          console.log(parseFloat(highestDetectedId), 'ASDJASDJKASHKDKJASHDKJASDKJASHKDASHDJKASHDK')
           console.log('FRONT END POST RESPONSE: ', response.data)
           console.log(response.data.concepts[0].value);
           console.log('hello wat here', this.isLoading, 'hello wat here')
-          if ( response.data.concepts[0].value > .7 ) {
+          if ( highestDetectedValue > .001 ) {
             this.props.navigation.navigate('Scroll', {
-              artistId: 7,
+              artistId: highestDetectedId,
               artistName: 'Audrey Kawasaki'
             })
 
