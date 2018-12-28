@@ -58,12 +58,14 @@ api
       // pass image data to clarifai api workflow
       clarifai.workflow
         // specify the model, and pass in the url from the s3 hosted image as a parameter
-        .predict('TestMural', req.file.location)
+        .predict('General', req.file.location)
+        // .predict('TestMural', req.file.location)
         .then((response) => {
           // destructure clarifai data response
           let data = response.results[0]
           let clarifaiAnalysis = data.outputs[0].data
           console.log('CLARIFAI ANALYSIS: ', clarifaiAnalysis)
+          console.log('CLARIFAI GENERAL: ', clarifaiAnalysis[0].name)
           res.json(clarifaiAnalysis)
         },
           (err) => {
