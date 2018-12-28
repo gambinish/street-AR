@@ -162,13 +162,14 @@ class ScrollScreen extends Component {
       <ScrollView ref={(scroller) => { this.scroller = scroller }}>
         {/* <Text>{artistId}, {artistName}</Text> */}
         {this.props.geoPoints.map((profile) => {
+          console.log('PROFILE: ', profile)
           return (
             <View key={profile.id} style={styles.screen}>
               <Card id={profile.id}>
                 {/* Beginning of Card Header */}
                 <CardSection>
                   <View>
-                    <Image style={{width: 50, height: 50}} source={{ uri: profile.propic }} />
+                    <Image style={{ width: 50, height: 50 }} source={{ uri: profile.propic }} />
                   </View>
                   <View style={styles.headerContentStyle}>
                     <RangaText style={styles.headerTextStyle}>
