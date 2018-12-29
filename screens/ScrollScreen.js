@@ -104,7 +104,7 @@ class ScrollScreen extends Component {
       return (
         <View>
           <CardSection>
-            <Button title='Previous Mural' onPress={() => this.scrollUp(profileId)} />
+            <Button title='Previous Mural' onPress={() => this.scrollUp(profileId)} /> 
             <Button title='Next Mural' onPress={() => this.scrollDown(profileId)} />
           </CardSection>
           <CardSection>
@@ -173,10 +173,15 @@ class ScrollScreen extends Component {
                 <CardSection style={styles.photoBackground}>
                   <Image style={styles.imageStyle} source={{ uri: profile.wall }} />
                 </CardSection>
+                {/* <CardSection> */}
+                  {/* <Button title='View Description' onPress={() => this.onClick(profile.id)} /> */}
+                {/* </CardSection> */}
+                {/* {this.renderDescription(profile.id, profile.description)} */}
                 <CardSection>
-                  <Button title='View Description' onPress={() => this.onClick(profile.id)} />
+                  <Text>
+                    {profile.description}
+                  </Text>
                 </CardSection>
-                {this.renderDescription(profile.id, profile.description)}
                 {this.renderButtons(profile.id)}
               </Card>
             </View>
@@ -225,5 +230,14 @@ const styles = StyleSheet.create({
   },
   screen: {
     height: Dimensions.get('window').height
+  },
+  buttons: {
+    display: 'flex',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    flexDirection: 'row',
+    margin: 10,
+    borderWidth: 10,
+    borderColor: '#d6d7da',
   }
 });
