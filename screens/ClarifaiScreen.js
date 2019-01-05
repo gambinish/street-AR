@@ -92,14 +92,14 @@ export default class CameraScreen extends React.Component {
 
   componentDidMount() {
     // create a directory for images to be saved to
-    FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'photos').catch(e => {
+    FileSystem.makeDirectoryAsync(PHOTOS_DIR + 'photos').catch(e => {
       console.log(e, 'Directory exists');
     });
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps !== this.props) {
-      FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'photos').catch(e => {
+      FileSystem.makeDirectoryAsync(PHOTOS_DIR + 'photos').catch(e => {
         console.log(e, 'Directory exists');
       });
     }
@@ -160,22 +160,26 @@ export default class CameraScreen extends React.Component {
   onPictureSaved = async (photo) => {
     await FileSystem.moveAsync({
       from: photo.uri,
-      to: `${FileSystem.documentDirectory}photos/test.jpg`,
+      to: `${PHOTOS_DIR}photos/test.jpg`,
     });
 
     // configure 'formData' for s3 upload
-    let localUri = `${FileSystem.documentDirectory}photos/test.jpg`
-    // console.log('local URI', photo.uri)
+    let localUri = `${PHOTOS_DIR}photos/test.jpg`
     let filename = photo.uri.split('/').pop();
-    // console.log('ORIGINAL NAME: ', filename)
     let match = /\.(\w+)$/.exec(filename);
-    // console.log('MATCH: ', match)
     let type = match ? `image/${match[1]}` : `image`;
+
+    // LOG FORM DATA
+    // console.log (*** FORM DATA ***)
+    // console.log('local URI', photo.uri)
+    // console.log('ORIGINAL NAME: ', filename)
+    // console.log('MATCH: ', match)
     // console.log('TYPE: ', type)
 
-    // // Upload the image using the fetch and FormData APIs
+    // Upload the image using the fetch and FormData APIs
     let formData = new FormData();
-    // // Assume "photo" is the name of the form field the server expects
+
+    // Assume "photo" is the name of the form field the server expects
     formData.append('image', { uri: localUri, name: filename, type });
     console.log('FORM DATA: ', formData)
 
@@ -185,24 +189,6 @@ export default class CameraScreen extends React.Component {
     this.setState({ isCameraFunctionsDisplayed: false });
     // {this.renderArtistData()}
 
-    // setTimeout(
-    //   function() {
-    //     this.setState({ isNoMural: true });
-    //     this.setState({ isLoading: false });
-    //   }
-    //   .bind(this),
-    //   3000
-    // );
-
-    // setTimeout(
-    //   function() {
-    //     this.setState({ isNoMural: false });
-    //     this.setState({ isCameraFunctionsDisplayed: true });
-    //   }
-    //   .bind(this),
-    //   7000
-    // );
-
     axios
       .post('http://34.213.121.74:9000/image-upload', formData)
       .then((response) => {
@@ -210,42 +196,41 @@ export default class CameraScreen extends React.Component {
         let highestDetectedValue = 0;
         let highestDetectedId;
 
-        for ( let i = 0; i < response.data.concepts.length; i++ ) {
-          if ( highestDetectedValue < response.data.concepts[i].value ) {
+        for (let i = 0; i < response.data.concepts.length; i++) {
+          if (highestDetectedValue < response.data.concepts[i].value) {
             highestDetectedValue = response.data.concepts[i].value;
             highestDetectedId = parseInt(response.data.concepts[i].name.replace(/[^0-9]/g, ''), 10);
           }
         }
 
+        // DATA LOGGING FROM CLARIFAI
+        console.log('*****DATA LOGGING FROM CLARIFAI*****')
+        console.log('highestDetectedId: ', parseFloat(highestDetectedId))
+        console.log('FRONT END POST RESPONSE: ', response.data)
+        console.log('Destructured respose data from first indexed data object: ', response.data.concepts[0].value);
+        console.log('this.isLoading: ', this.isLoading)
 
+        if (highestDetectedValue > .001) {
+          this.props.navigation.navigate('Scroll', {
+            artistId: highestDetectedId,
+            artistName: 'Audrey Kawasaki'
+          })
 
-          console.log(parseFloat(highestDetectedId), 'ASDJASDJKASHKDKJASHDKJASDKJASHKDASHDJKASHDK')
-          console.log('FRONT END POST RESPONSE: ', response.data)
-          console.log(response.data.concepts[0].value);
-          console.log('hello wat here', this.isLoading, 'hello wat here')
-          if ( highestDetectedValue > .001 ) {
-            this.props.navigation.navigate('Scroll', {
-              artistId: highestDetectedId,
-              artistName: 'Audrey Kawasaki'
-            })
+          this.setState({ isLoading: false });
+          this.setState({ isCameraFunctionsDisplayed: true });
+        } else {
+          this.setState({ isNoMural: true });
+          this.setState({ isLoading: false });
 
-            this.setState({ isLoading: false });
-            this.setState({ isCameraFunctionsDisplayed: true });
-            // this.renderArtistData()
-          } else {
-            this.setState({ isNoMural: true });
-            this.setState({ isLoading: false });
-
-            setTimeout(
-              function() {
-                this.setState({ isNoMural: false });
-                this.setState({ isCameraFunctionsDisplayed: true });
-              }
+          setTimeout(
+            function () {
+              this.setState({ isNoMural: false });
+              this.setState({ isCameraFunctionsDisplayed: true });
+            }
               .bind(this),
-              3000
+            3000
           );
-            // this.renderArtistData()
-          }
+        }
       })
       .catch((err) => {
         console.log(err)
@@ -253,6 +238,7 @@ export default class CameraScreen extends React.Component {
     this.setState({ newPhotos: true });
   }
 
+  // SOME CAMERA TEMPLATE CODE
   onBarCodeScanned = code => {
     this.setState(
       { barcodeScanning: !this.state.barcodeScanning },
@@ -383,16 +369,16 @@ export default class CameraScreen extends React.Component {
       </TouchableOpacity>
     </View>
 
-  renderArtistData = () => 
+  renderArtistData = () =>
     <View
       style={styles.artistBar}>
-        <Text style={styles.artistData}>Detecting Image...</Text>
+      <Text style={styles.artistData}>Detecting Image...</Text>
     </View>
 
-  renderNoImageDetected = () => 
+  renderNoImageDetected = () =>
     <View
       style={styles.artistBar}>
-        <Text style={styles.noImage}>No Mural Image Detected</Text>
+      <Text style={styles.noImage}>No Mural Image Detected</Text>
     </View>
 
   renderBottomBar = () =>
@@ -472,7 +458,7 @@ export default class CameraScreen extends React.Component {
             ],
           }}
           onBarCodeScanned={this.state.barcodeScanning ? this.onBarCodeScanned : undefined}
-          // renderArtistData={this.state.isLoading ? this.renderArtistData() : null}
+        // renderArtistData={this.state.isLoading ? this.renderArtistData() : null}
         >
           {this.state.isCameraFunctionsDisplayed && this.renderTopBar()}
           {this.state.isLoading && this.renderArtistData()}
