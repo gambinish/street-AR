@@ -111,10 +111,10 @@ class HomeScreen extends React.Component {
                   {/* BREAK THIS INTO HELPER FUNCTION? */}
                   {Platform.OS === 'ios'
                     ?
-                    <TextInput name='searchInput' placeholder='enter artist here' style={{ borderWidth: 1, width: 200, height: 40, textAlign: 'center' }} onChangeText={this.handleChange} value={this.state.text} />
+                    <TextInput name='searchInput' placeholder='enter artwork here' style={{ borderWidth: 1, width: 200, height: 40, textAlign: 'center' }} onChangeText={this.handleChange} value={this.state.text} />
                     :
                     <TextInput
-                      placeholder="enter artist here"
+                      placeholder="enter artwork here"
                       style={{ height: 40, borderColor: 'gray', borderWidth: 1, textAlign: "center" }}
                       onChangeText={(text) => {
                         this.setState({ text })
@@ -123,7 +123,7 @@ class HomeScreen extends React.Component {
                       value={this.state.text}
                     />
                   }
-                  <Button title='Find Artist' onPress={this.handleSubmit} />
+                  <Button title='Find Artwork' onPress={this.handleSubmit} />
                 </FadeInView>
               </View>
             </View>

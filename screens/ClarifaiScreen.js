@@ -11,7 +11,6 @@ import {
   Image,
   Platform
 } from 'react-native';
-import GalleryScreen from './GalleryScreen';
 import isIPhoneX from 'react-native-is-iphonex';
 import axios from 'axios'
 
@@ -169,25 +168,21 @@ export default class CameraScreen extends React.Component {
     let match = /\.(\w+)$/.exec(filename);
     let type = match ? `image/${match[1]}` : `image`;
 
-    // LOG FORM DATA
-    // console.log (*** FORM DATA ***)
-    // console.log('local URI', photo.uri)
-    // console.log('ORIGINAL NAME: ', filename)
-    // console.log('MATCH: ', match)
-    // console.log('TYPE: ', type)
-
-    // Upload the image using the fetch and FormData APIs
+    // Upload the image using the FormData API
     let formData = new FormData();
 
-    // Assume "photo" is the name of the form field the server expects
-    formData.append('image', { uri: localUri, name: filename, type });
-    console.log('FORM DATA: ', formData)
+    // LOG FORM DATA
+    console.log('***** LOG FORM DATA *****')
+    console.log(formData)
 
+    // dummy url image for testing
     // let mural = 'http://powwowhawaii.com/wp-content/uploads/2016/03/pwh2016-Audrey-Kawasaki.jpg'
+
+    // "image" is the name of the form field the server expects
+    formData.append('image', { uri: localUri, name: filename, type });
 
     this.setState({ isLoading: true })
     this.setState({ isCameraFunctionsDisplayed: false });
-    // {this.renderArtistData()}
 
     axios
       .post('http://34.213.121.74:9000/image-upload', formData)
@@ -205,23 +200,23 @@ export default class CameraScreen extends React.Component {
 
         // DATA LOGGING FROM CLARIFAI
         console.log('*****DATA LOGGING FROM CLARIFAI*****')
-        console.log('highestDetectedId: ', parseFloat(highestDetectedId))
         console.log('FRONT END POST RESPONSE: ', response.data)
         console.log('Destructured respose data from first indexed data object: ', response.data.concepts[0].value);
+        console.log('highestDetectedId, appended to concept in clarifai: ', parseFloat(highestDetectedId))
         console.log('this.isLoading: ', this.isLoading)
 
+        // LOGIC FOR DETAIL PAGE REDIRECT
+        // this will need to be tweaked when we figure out how to get more substantial data from clarifai.
         if (highestDetectedValue > .001) {
           this.props.navigation.navigate('Scroll', {
             artistId: highestDetectedId,
             artistName: 'Audrey Kawasaki'
           })
-
           this.setState({ isLoading: false });
           this.setState({ isCameraFunctionsDisplayed: true });
         } else {
           this.setState({ isNoMural: true });
           this.setState({ isLoading: false });
-
           setTimeout(
             function () {
               this.setState({ isNoMural: false });
@@ -233,12 +228,12 @@ export default class CameraScreen extends React.Component {
         }
       })
       .catch((err) => {
-        console.log(err)
+        console.log('ERROR:', err)
       })
     this.setState({ newPhotos: true });
   }
 
-  // SOME CAMERA TEMPLATE CODE
+  // SOME CAMERA TEMPLATE CODE, this is unused currently
   onBarCodeScanned = code => {
     this.setState(
       { barcodeScanning: !this.state.barcodeScanning },
