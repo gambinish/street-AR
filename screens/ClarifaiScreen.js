@@ -185,7 +185,11 @@ export default class CameraScreen extends React.Component {
     this.setState({ isCameraFunctionsDisplayed: false });
 
     axios
-      .post('http://34.213.121.74:9000/image-upload', formData)
+      // ec2 instance IP address
+      // .post('http://34.213.121.74:9000/image-upload', formData)
+      // localhost
+      .post('http://192.168.1.45:9000/image-upload', formData)
+
       .then((response) => {
 
         let highestDetectedValue = 0;

@@ -108,22 +108,22 @@ export default class Photo extends React.Component {
   render() {
     const { uri } = this.props;
     return (
-        <TouchableOpacity
-          style={styles.pictureWrapper}
-          onLongPress={this.detectFace}
-          onPress={this.toggleSelection}
-          activeOpacity={1}
-        >
-          <Image
-            style={styles.picture}
-            source={{ uri }}
-          />
-          {this.state.selected && <Ionicons name="md-checkmark-circle" size={30} color="#4630EB" />}
-          <View style={styles.facesContainer}>
-            {this.renderFaces()}
-          </View>
-        </TouchableOpacity>
-      );
+      <TouchableOpacity
+        style={styles.pictureWrapper}
+        onLongPress={this.detectFace}
+        onPress={this.toggleSelection}
+        activeOpacity={1}
+      >
+        <Image
+          style={styles.picture}
+          source={{ uri }}
+        />
+        {this.state.selected && <Ionicons name="md-checkmark-circle" size={30} color="#4630EB" />}
+        <View style={styles.facesContainer}>
+          {this.renderFaces()}
+        </View>
+      </TouchableOpacity>
+    );
   };
 }
 
